@@ -4,8 +4,12 @@ import {
   PROCUREMENT_PROCESSES,
   PROCUREMENT_ROLES,
 } from "@/data/procurement-processes";
+import {
+  WORK_ORDER_PROCESSES,
+  WORK_ORDER_ROLES,
+} from "@/data/work-order-processes";
 
-export type ModuleId = "hr" | "procurement";
+export type ModuleId = "hr" | "procurement" | "work-orders";
 
 export interface AssessmentModule {
   id: ModuleId;
@@ -40,6 +44,17 @@ export const ASSESSMENT_MODULES: AssessmentModule[] = [
       "طلب الشراء، الاعتماد، عروض الأسعار، أمر الشراء، الاستلام، الفواتير، والموردين",
     processes: PROCUREMENT_PROCESSES,
     roles: PROCUREMENT_ROLES,
+  },
+  {
+    id: "work-orders",
+    title: "أوامر العمل",
+    titleEn: "Work Orders",
+    active: true,
+    path: "/work-orders",
+    description:
+      "دورة أمر العمل للعقد الموحد: UDS، التصاريح، التنفيذ، الإقفال، المستخلص، الفاتورة، التحصيل، العهدة والطوارئ",
+    processes: WORK_ORDER_PROCESSES,
+    roles: WORK_ORDER_ROLES,
   },
 ];
 

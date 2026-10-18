@@ -144,6 +144,12 @@ export function AdminDashboard() {
     handoff: "تسليم بين الإدارات",
     reporting: "تقارير",
     duplicate: "إدخال مزدوج",
+    duplicate_wo: "أوامر مزدوجة / بلا أمر",
+    unbilled: "منفّذ غير مفوتر",
+    rejects: "رفض مستخلص/فاتورة",
+    materials: "فروقات عهدة",
+    emergency: "طوارئ خارج السجل",
+    uds_mismatch: "فروقات UDS",
   };
 
   return (

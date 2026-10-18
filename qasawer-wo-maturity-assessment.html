@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>تقييم نضج دورة أمر العمل — قساور</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --font: "IBM Plex Sans Arabic", "Noto Sans Arabic", Tahoma, sans-serif;
+    --charcoal: #2f2f2f;
+    --orange: #ec8224;
+    --orange-dark: #c7671a;
+    --peach: #fdf0e5;
+    --peach-mid: #f7c9a0;
+    --bg: #f7f7f7;
+    --card: #fff;
+    --text: #2f2f2f;
+    --muted: #666;
+    --line: #e3e3e3;
+    --ok: #1a7a45;
+    --warn: #b7791f;
+    --radius: 20px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.65; }
+  .hero {
+    background: linear-gradient(135deg, #2f2f2f 0%, #4a4a4a 100%);
+    color: #fff; padding: 40px 24px 88px;
+  }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .eyebrow {
+    display: inline-block; font-size: 13px; color: var(--peach-mid);
+    background: rgba(236,130,36,.15); border: 1px solid rgba(236,130,36,.35);
+    padding: 4px 12px; border-radius: 999px;
+  }
+  h1 { font-size: 30px; margin: 14px 0 8px; font-weight: 700; }
+  .hero p { color: #cfcfcf; margin: 0; max-width: 780px; font-size: 15px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: #e8e8e8; }
+  .page { max-width: 1100px; margin: -56px auto 0; padding: 0 24px 72px; }
+  .summary {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; margin-bottom: 28px;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,.04); padding: 22px;
+  }
+  .score-big { font-size: 48px; font-weight: 700; color: var(--orange); line-height: 1; }
+  .score-label { color: var(--muted); font-size: 14px; margin-top: 4px; }
+  .level-name { font-size: 20px; font-weight: 700; margin-top: 10px; }
+  .bars { display: flex; flex-direction: column; gap: 8px; }
+  .bar-row { display: grid; grid-template-columns: 140px 1fr 42px; gap: 10px; align-items: center; font-size: 13px; }
+  .bar-track { height: 10px; background: #eee; border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--orange); border-radius: 999px; width: 0; transition: width .25s; }
+  .bar-row .n { text-align: start; font-weight: 600; color: var(--charcoal); }
+  .scale {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 18px 0 8px;
+  }
+  .scale div {
+    background: var(--peach); border-radius: 14px; padding: 12px 10px; text-align: center; font-size: 12px;
+  }
+  .scale b { display: block; font-size: 18px; color: var(--orange-dark); margin-bottom: 4px; }
+  .howto { color: var(--muted); font-size: 14px; margin: 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  button {
+    font: inherit; cursor: pointer; border: 0; border-radius: 12px;
+    padding: 10px 16px; font-weight: 600; font-size: 14px;
+  }
+  .btn-primary { background: var(--orange); color: #fff; }
+  .btn-ghost { background: #fff; color: var(--charcoal); border: 1px solid var(--line); }
+  .domain { margin-top: 28px; scroll-margin-top: 20px; }
+  .domain-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .domain-head h2 { margin: 0; font-size: 20px; }
+  .domain-head .meta { font-size: 13px; color: var(--muted); }
+  .domain-score {
+    font-size: 13px; font-weight: 700; color: var(--orange-dark);
+    background: var(--peach); padding: 4px 10px; border-radius: 999px;
+  }
+  .q {
+    border-top: 1px solid var(--line); padding: 16px 0;
+  }
+  .q:first-of-type { border-top: 0; }
+  .q-text { font-weight: 600; font-size: 15px; margin: 0 0 4px; }
+  .q-hint { font-size: 13px; color: var(--muted); margin: 0 0 12px; }
+  .opts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .opts label {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    border: 1px solid var(--line); border-radius: 14px; padding: 10px 6px;
+    cursor: pointer; font-size: 12px; color: var(--muted); background: #fafafa;
+    transition: .15s;
+  }
+  .opts label:hover { border-color: var(--peach-mid); }
+  .opts input { accent-color: var(--orange); }
+  .opts label:has(input:checked) {
+    border-color: var(--orange); background: var(--peach); color: var(--charcoal); font-weight: 600;
+  }
+  .refs {
+    margin-top: 40px; font-size: 13px; color: var(--muted);
+  }
+  .refs ul { padding-inline-start: 18px; }
+  footer {
+    margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    font-size: 13px; color: var(--muted);
+  }
+  @media (max-width: 860px) {
+    .summary { grid-template-columns: 1fr; }
+    .scale { grid-template-columns: 1fr 1fr; }
+    .opts { grid-template-columns: 1fr 1fr; }
+    .bar-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+  @media print {
+    .actions, .opts input { display: none; }
+    .hero { padding-bottom: 32px; }
+    .page { margin-top: 16px; }
+    .opts label { border: 0; background: none; }
+    .opts label:has(input:checked)::after { content: " ✓"; color: var(--orange); font-weight: 700; }
+  }
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">شركة قساور للمقاولات · تشخيص قبل الانطلاق</span>
+    <h1>تقييم نضج دورة عمل أمر العمل</h1>
+    <p>
+      نموذج تشخيصي يغطي المراحل السبع كاملةً، مع العهدة والطوارئ والحوكمة.
+      مبني على مستويات نضج العمليات (CMMI) وممارسات إدارة الخدمة (ITIL) وإدارة الخدمة الميدانية (FSM)
+      وممارسات عقود المقاولات وتحصيل المستخلصات.
+    </p>
+    <div class="chips">
+      <span class="chip">مقياس 0–4</span>
+      <span class="chip">10 مجالات</span>
+      <span class="chip">42 سؤالًا</span>
+      <span class="chip">النتيجة تُحفظ محليًا في المتصفح</span>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="summary">
+    <div class="card">
+      <div class="score-big" id="overall">—</div>
+      <div class="score-label">متوسط النضج العام من 4</div>
+      <div class="level-name" id="overallLevel">ابدأ بالإجابة</div>
+      <p class="howto" id="overallHint" style="margin-top:10px">كل سؤال يُجاب بناءً على الوضع الحالي الفعلي، لا على ما نخطط له.</p>
+      <div class="actions">
+        <button class="btn-primary" onclick="window.print()">طباعة / PDF</button>
+        <button class="btn-ghost" onclick="resetAll()">مسح الإجابات</button>
+        <button class="btn-ghost" onclick="exportJson()">تصدير JSON</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px">النضج حسب المجال</div>
+      <div class="bars" id="bars"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700;margin-bottom:8px">مقياس الإجابة</div>
+    <div class="scale">
+      <div><b>0</b>غير موجود<br>ارتجالي / يعتمد على أشخاص</div>
+      <div><b>1</b>ابتدائي<br>يحصل أحيانًا بلا معيار ثابت</div>
+      <div><b>2</b>متكرر<br>معروف لدى الفريق لكن غير موحّد ولا مُلزم</div>
+      <div><b>3</b>معرّف<br>موثّق ومطبّق في النظام لمعظم الحالات</div>
+      <div><b>4</b>مُدار<br>مُقاس بمؤشرات ويُحسَّن بقرارات مكتوبة</div>
+    </div>
+    <p class="howto">المرجع العالمي: مستويات نضج القدرات (CMMI) وممارسات ITIL للعمليات القابلة للقياس، مع مجالات FSM لأمر العمل من الاستلام حتى الفوترة.</p>
+  </div>
+
+  <div id="domains"></div>
+
+  <div class="card refs">
+    <div style="font-weight:700;color:var(--charcoal);margin-bottom:8px">المراجع التي بُني عليها النموذج</div>
+    <ul>
+      <li>CMMI / Capability Maturity — مستويات العملية من الارتجال إلى الإدارة والتحسين المستمر.</li>
+      <li>ITIL 4 — إدارة الطلبات والمعرفة والتغيير والتحسين المستمر، مع أدلة مكتوبة ومالك عملية.</li>
+      <li>Field Service Management practices — استلام أمر العمل، التنفيذ الميداني، الإغلاق، العهدة/المخزون، والفوترة.</li>
+      <li>ممارسات عقود المقاولات والمستخلصات — تتبع التنويعات، الشهادات، الربط بين المنفّذ والمفوتر والتحصيل.</li>
+      <li>ضوابط الرقابة الداخلية — مسار تدقيق، فصل صلاحيات، مطابقة دورية مع النظام المرجعي (UDS).</li>
+    </ul>
+  </div>
+
+  <footer>
+    <span>قساور · تقييم نضج دورة أمر العمل · أكتوبر 2026</span>
+    <span>يُستخدم كخط أساس قبل نقاط الاعتماد، ويُعاد بعد الإطلاق التجريبي</span>
+  </footer>
+</div>
+
+<script>
+const LEVELS = [
+  { min: 0, max: 0.75, name: "ارتجالي", hint: "العمل يعتمد على أشخاص وملفات متفرقة. أولوية: توحيد المسار وتسميته." },
+  { min: 0.75, max: 1.75, name: "ابتدائي", hint: "توجد ممارسات جزئية. أولوية: توثيق as-is وتجميد نطاق التجربة." },
+  { min: 1.75, max: 2.5, name: "متكرر", hint: "الفريق يكرر نفس الخطوات غالبًا. أولوية: فرض المسار في النظام." },
+  { min: 2.5, max: 3.25, name: "معرّف", hint: "المسار معرّف ومطبّق. أولوية: القياس والمؤشرات والذمم." },
+  { min: 3.25, max: 4.01, name: "مُدار ومُحسَّن", hint: "قرارات مبنية على أرقام. أولوية: الأتمتة والتحسين المستمر." },
+];
+
+const DOMAINS = [
+  {
+    id: "intake",
+    title: "1) استلام أمر العمل من UDS",
+    ref: "FSM: Work Order Ingestion · ITIL: Request Fulfilment",
+    questions: [
+      { id: "intake_1", q: "هل كل أمر عمل يبدأ من مرجع رسمي واحد (UDS) دون إنشاء يدوي موازٍ؟", hint: "الممارسة العالمية: نقطة دخول واحدة (single intake) تمنع الازدواج والضياع." },
+      { id: "intake_2", q: "هل تُسجَّل بيانات الأمر الأساسية فور الاستلام (رقم الأمر، الموقع، النوع، القيمة التقديرية، التاريخ) في مكان قابل للبحث؟", hint: "اكتمال البيانات عند الإنشاء شرط لأي قياس لاحق لزمن الدورة." },
+      { id: "intake_3", q: "هل يوجد مالك واضح لاستلام الأوامر وتوزيعها، مع بديل عند غيابه؟", hint: "ITIL: كل ممارسة لها Process Owner وصلاحيات معرّفة." },
+      { id: "intake_4", q: "هل يمكن معرفة حالة كل أمر (جديد / قيد التصريح / قيد التنفيذ…) من شاشة واحدة دون سؤال أشخاص؟", hint: "شفافية الحالة (status visibility) أساس حوكمة أمر العمل." },
+    ]
+  },
+  {
+    id: "permits",
+    title: "2) التصاريح (بلدي والجهات)",
+    ref: "FSM: Compliance · Construction permit tracking",
+    questions: [
+      { id: "permits_1", q: "هل أنواع التصاريح المطلوبة لكل نوع أمر معرفة مسبقًا (قائمة تحقق) وليست متروكة لتقدير المشرف؟", hint: "الممارسة: مصفوفة متطلبات الامتثال حسب نوع العمل." },
+      { id: "permits_2", q: "هل تواريخ طلب التصريح وصدوره ورفضه مربوطة بأمر العمل نفسه؟", hint: "بدون ربط زمني لا يمكن قياس زمن عنق الزجاجة." },
+      { id: "permits_3", q: "هل يُمنع بدء التنفيذ الميداني نظاميًا أو إجرائيًا قبل اكتمال التصاريح الإلزامية؟", hint: "بوابة (gate) قبل التنفيذ — ممارسة شائعة في السلامة والامتثال." },
+      { id: "permits_4", q: "هل تُحفظ مرفقات التصاريح وأرقامها كمراجع قابلة للتدقيق عند المطالبة؟", hint: "مسار تدقيق (audit trail) مطلوب عند رفض المستخلص أو المراجعة." },
+    ]
+  },
+  {
+    id: "field",
+    title: "3) التنفيذ الميداني",
+    ref: "FSM: Work Execution · Mobile closeout",
+    questions: [
+      { id: "field_1", q: "هل يُسجَّل تاريخ بدء التنفيذ الفعلي وتاريخ الإنجاز على أمر العمل خلال 24 ساعة من الحدوث؟", hint: "التسجيل الميداني في نفس اليوم معيار FSM للنضج التشغيلي." },
+      { id: "field_2", q: "هل نموذج التسجيل الميداني موحّد (حقول إلزامية، صور/ملاحظات، كميات) ويُعبَّأ من الجوال؟", hint: "توحيد نموذج الإغلاق الميداني يقلل رفض المستخلص لاحقًا." },
+      { id: "field_3", q: "هل يمكن معرفة نسبة الإنجاز والكميات المنفذة قبل إصدار المستخلص؟", hint: "Earned / completed quantity قبل الفوترة — أساس المنفّذ غير المفوتر." },
+      { id: "field_4", q: "هل أوامر الطوارئ أو الأعمال الإضافية تُربَط بنفس هيكل أمر العمل (أو إصدار منه) ولا تبقى خارج السجل؟", hint: "لا عمل بلا أمر (no work without WO) — مبدأ أساسي في FSM والعقود." },
+    ]
+  },
+  {
+    id: "close",
+    title: "4) إقفال المهمة والشهادة",
+    ref: "FSM: Job Completion & Customer Sign-off",
+    questions: [
+      { id: "close_1", q: "هل معايير «مكتمل وجاهز للشهادة» مكتوبة ومفهومة للمشرف والمراجع؟", hint: "Definition of Done يمنع الإقفال الشكلي غير القابل للمطالبة." },
+      { id: "close_2", q: "هل اعتماد الإقفال/الشهادة يتم بصلاحيات واضحة ومسار اعتماد (وليس موافقة شفهية)؟", hint: "فصل الاعتماد عن التنفيذ ممارسة رقابة داخلية." },
+      { id: "close_3", q: "هل يُمنع التقدم للمستخلص إذا كانت الشهادة أو الإقفال ناقصين؟", hint: "Finish-to-Start بين الإقفال والمستخلص." },
+      { id: "close_4", q: "هل تُحفظ أدلة الإقفال (صور، قياسات، توقيع/اعتماد الجهة) مع الأمر؟", hint: "أدلة الإغلاق تقلل زمن مراجعة المستخلص والرفض." },
+    ]
+  },
+  {
+    id: "certificate",
+    title: "5) المستخلص (إعداد وتقديم)",
+    ref: "Construction progress billing · Contract admin",
+    questions: [
+      { id: "certificate_1", q: "هل يُبنى المستخلص من أوامر/كميات معتمدة في النظام، لا من ملف إكسل منفصل؟", hint: "مصدر حقيقة واحد يمنع اختلاف الأرقام بين الميدان والمالية." },
+      { id: "certificate_2", q: "هل زمن إعداد المستخلص من تاريخ القطع/الإقفال إلى التقديم مُقاس ومستهدف؟", hint: "KPI شائع: دورة إعداد المطالبة (claim cycle time)." },
+      { id: "certificate_3", q: "هل أسباب رفض المستخلص تُصنَّف وتُعالَج كتحسين (لا تُعاد كمناقشة فردية فقط)؟", hint: "التحسين المستمر (continual improvement) على أسباب الرفض." },
+      { id: "certificate_4", q: "هل يمكن معرفة قيمة المنفّذ غير المفوتر وأعماره في أي لحظة؟", hint: "Unbilled revenue aging — مؤشر مالي/تشغيلي أساسي في المقاولات." },
+    ]
+  },
+  {
+    id: "invoice",
+    title: "6) الفاتورة (SAP / زاتكا)",
+    ref: "Revenue Operations · e-invoicing controls",
+    questions: [
+      { id: "invoice_1", q: "هل كل فاتورة مربوطة بمستخلص/أوامر عمل معتمدة ولا تُنشأ من قيد محاسبي حر؟", hint: "الربط من المصدر إلى الفاتورة يمنع فجوات التحصيل." },
+      { id: "invoice_2", q: "هل متطلبات بوابة العميل (SAP) والزكاة والضريبة مكتملة قبل الإصدار (حقول، مرفقات، حالة)؟", hint: "قائمة تحقق قبل الإرسال تقلل الإرجاع والغرامة." },
+      { id: "invoice_3", q: "هل تاريخ إصدار الفاتورة وتاريخ قبولها/رفضها عند العميل مسجّلان وقابلان للقياس؟", hint: "قياس محطة الفاتورة جزء من دورة التحصيل." },
+      { id: "invoice_4", q: "هل يوجد تطابق دوري بين الفواتير الصادرة والمستخلصات المعتمدة؟", hint: "مطابقة ثلاثية/ثنائية (reconciliation) ممارسة رقابة مالية." },
+    ]
+  },
+  {
+    id: "collection",
+    title: "7) الدفع والتحصيل",
+    ref: "Order-to-Cash · Collections management",
+    questions: [
+      { id: "collection_1", q: "هل يُتابع عمر الذمم على مستوى الفاتورة وأمر العمل (وليس إجماليًا فقط)؟", hint: "Aging على مستوى الوثيقة يمكن من التدخل المبكر." },
+      { id: "collection_2", q: "هل سبب تأخير التحصيل يُصنَّف (فني / مستندات / اعتماد عميل / نزاع)؟", hint: "تصنيف أسباب التأخير شرط لأي تحسين موجّه." },
+      { id: "collection_3", q: "هل يمكن قياس الزمن من التنفيذ الميداني حتى دخول المبلغ، وليس من الفاتورة فقط؟", hint: "المؤشر الذهبي للدورة الكاملة (end-to-end cycle time)." },
+      { id: "collection_4", q: "هل الغرامات والخصومات والحجوزات مربوطة بأوامر/فواتير محددة وسببها معروف؟", hint: "شفافية الاستقطاعات جزء من نضج التحصيل التعاقدي." },
+    ]
+  },
+  {
+    id: "materials",
+    title: "8) عهدة مواد الشركة (تمكين الدورة)",
+    ref: "FSM: Inventory & Parts · Warehouse controls",
+    questions: [
+      { id: "materials_1", q: "هل استلام وصرف وإرجاع مواد الشركة يتم على أمر العمل (أو مشروع/موقع مربوط به)؟", hint: "تحميل المواد على أمر العمل ممارسة تكلفة المشروع." },
+      { id: "materials_2", q: "هل معادلة العهدة (مستلم − مصروف − مرتجع = رصيد) تُحسب آليًا وتُراجع دوريًا؟", hint: "ضابط مخزون أساسي؛ الفروقات المتأخرة علامة ضعف نضج." },
+      { id: "materials_3", q: "هل مستودعات العهدة منفصلة وصلاحيات الصرف محددة؟", hint: "فصل المواقع والصلاحيات يقلل التسرب واللبس المحاسبي." },
+      { id: "materials_4", q: "هل فروقات العهدة خارج نسبة التسامح تُبلَّغ للإدارة بمؤشر واضح؟", hint: "Escalation by threshold — ممارسة إدارة المخزون." },
+    ]
+  },
+  {
+    id: "emergency",
+    title: "9) أعمال الطوارئ / بلا أمر خدمة",
+    ref: "FSM: Exception & emergency work control",
+    questions: [
+      { id: "emergency_1", q: "هل تعريف «حالة طوارئ» مكتوب، ومن يملك صلاحية فتحها؟", hint: "بدون تعريف تصبح الطوارئ مسارًا موازيًا دائمًا." },
+      { id: "emergency_2", q: "هل كل عمل طوارئ يُحوَّل لاحقًا إلى أمر عمل/أمر خدمة خلال مهلة محددة؟", hint: "تسوية الاستثناء (exception closure) خلال SLA." },
+      { id: "emergency_3", q: "هل قيمة وعمر أعمال الطوارئ المنتظرة للمطالبة ظاهرة في تقرير دوري؟", hint: "قائمة انتظار مرئية تمنع النسيان." },
+      { id: "emergency_4", q: "هل نسبة الأعمال المنفذة بلا أمر تتناقص وتُراجَع في نقاط الاعتماد؟", hint: "مؤشر حوكمة: العمل خارج النظام يجب أن يتجه للصفر." },
+    ]
+  },
+  {
+    id: "governance",
+    title: "10) الحوكمة والقياس عبر الدورة",
+    ref: "CMMI Level 4–5 · ITIL Continual Improvement",
+    questions: [
+      { id: "gov_1", q: "هل النقاط الزمنية السبع تُملأ كتواريخ إلزامية على أمر العمل (لا كملاحظات نصية)؟", hint: "بيانات زمنية منظمة شرط لأي تحليل اختناقات." },
+      { id: "gov_2", q: "هل يوجد لوحة مؤشرات أسبوعية لزمن كل مرحلة وللمنفّذ غير المفوتر؟", hint: "Managed process = قرارات من أرقام، لا من انطباع." },
+      { id: "gov_3", q: "هل مطابقة دورية مع UDS تتم بأدلة مكتوبة وفروقات مغلقة؟", hint: "مطابقة النظام المرجعي (system of record reconciliation)." },
+      { id: "gov_4", q: "هل لكل مرحلة مالك عملية واحد، ونقاط اعتماد بقرار مكتوب؟", hint: "RACI + gates — أساس البرامج الناجحة لإدارة التغيير (Prosci/ITIL)." },
+      { id: "gov_5", q: "هل تُراجع أسباب التأخير والرفض والغرامات شهريًا ويُغلق عليها إجراء تصحيحي؟", hint: "حلقة PDCA / Continual Improvement." },
+      { id: "gov_6", q: "هل معرفة تشغيل الدورة لا تعتمد على شخص أو اثنين فقط (توثيق + تدريب + بدلاء)؟", hint: "تقليل الاعتماد على الأفراد (bus factor) علامة نضج مؤسسي." },
+    ]
+  },
+];
+
+const STORAGE_KEY = "qasawer-wo-maturity-v1";
+const answers = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+function levelFor(avg) {
+  if (avg == null || Number.isNaN(avg)) return { name: "—", hint: "أجب عن الأسئلة لظهور النتيجة." };
+  return LEVELS.find(l => avg >= l.min && avg < l.max) || LEVELS[LEVELS.length - 1];
+}
+
+function render() {
+  const root = document.getElementById("domains");
+  const bars = document.getElementById("bars");
+  root.innerHTML = "";
+  bars.innerHTML = "";
+  const domainAvgs = [];
+
+  DOMAINS.forEach(d => {
+    const sec = document.createElement("section");
+    sec.className = "domain";
+    sec.id = d.id;
+    const vals = d.questions.map(q => answers[q.id]).filter(v => v !== undefined && v !== "");
+    const avg = vals.length ? vals.reduce((a, b) => a + Number(b), 0) / vals.length : null;
+    domainAvgs.push({ id: d.id, title: d.title, avg, answered: vals.length, total: d.questions.length });
+
+    sec.innerHTML = `
+      <div class="domain-head">
+        <div>
+          <h2>${d.title}</h2>
+          <div class="meta">${d.ref}</div>
+        </div>
+        <span class="domain-score" data-domain="${d.id}">${avg == null ? "—" : avg.toFixed(1) + " / 4"} · ${vals.length}/${d.questions.length}</span>
+      </div>
+      <div class="card" data-domain-body="${d.id}"></div>
+    `;
+    root.appendChild(sec);
+    const body = sec.querySelector("[data-domain-body]");
+    d.questions.forEach(q => {
+      const div = document.createElement("div");
+      div.className = "q";
+      div.innerHTML = `
+        <p class="q-text">${q.q}</p>
+        <p class="q-hint">${q.hint}</p>
+        <div class="opts">
+          ${[0,1,2,3,4].map(n => `
+            <label>
+              <input type="radio" name="${q.id}" value="${n}" ${String(answers[q.id]) === String(n) ? "checked" : ""} />
+              <span>${n}</span>
+            </label>
+          `).join("")}
+        </div>
+      `;
+      body.appendChild(div);
+      div.querySelectorAll("input").forEach(inp => {
+        inp.addEventListener("change", () => {
+          answers[q.id] = Number(inp.value);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+          render();
+          document.getElementById(d.id)?.scrollIntoView({ block: "nearest" });
+        });
+      });
+    });
+
+    const short = d.title.replace(/^\d+\)\s*/, "").split(" ")[0];
+    const pct = avg == null ? 0 : (avg / 4) * 100;
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `
+      <div title="${d.title}">${short}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <div class="n">${avg == null ? "—" : avg.toFixed(1)}</div>
+    `;
+    bars.appendChild(row);
+  });
+
+  const answeredDomains = domainAvgs.filter(x => x.avg != null);
+  const overall = answeredDomains.length
+    ? answeredDomains.reduce((a, b) => a + b.avg, 0) / answeredDomains.length
+    : null;
+  const lv = levelFor(overall);
+  document.getElementById("overall").textContent = overall == null ? "—" : overall.toFixed(1);
+  document.getElementById("overallLevel").textContent = overall == null ? "ابدأ بالإجابة" : lv.name;
+  document.getElementById("overallHint").textContent = lv.hint;
+  const totalQ = DOMAINS.reduce((a, d) => a + d.questions.length, 0);
+  const answeredQ = Object.keys(answers).length;
+  if (overall != null) {
+    document.getElementById("overallHint").textContent =
+      `${lv.hint} · أُجيب ${answeredQ} من ${totalQ} سؤالًا.`;
+  }
+}
+
+function resetAll() {
+  if (!confirm("مسح كل الإجابات؟")) return;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+function exportJson() {
+  const domainScores = DOMAINS.map(d => {
+    const vals = d.questions.map(q => answers[q.id]).filter(v => v !== undefined);
+    return {
+      id: d.id,
+      title: d.title,
+      score: vals.length ? +(vals.reduce((a, b) => a + Number(b), 0) / vals.length).toFixed(2) : null,
+      answers: Object.fromEntries(d.questions.map(q => [q.id, answers[q.id] ?? null])),
+    };
+  });
+  const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), domainScores, answers }, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "qasawer-wo-maturity.json";
+  a.click();
+}
+
+render();
+</script>
+</body>
+</html>
