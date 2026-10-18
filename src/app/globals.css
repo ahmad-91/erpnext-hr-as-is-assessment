@@ -230,6 +230,48 @@ h3 {
   margin-bottom: 0.6rem;
 }
 
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.module-card {
+  text-align: right;
+  border: 1px solid var(--line);
+  background: #fbfcfb;
+  border-radius: 16px;
+  padding: 1rem;
+  cursor: pointer;
+  display: grid;
+  gap: 0.35rem;
+  min-height: 110px;
+}
+
+.module-card strong {
+  font-size: 1.05rem;
+}
+
+.module-card span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.module-card em {
+  font-style: normal;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.module-card.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
 .role-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -1133,6 +1175,10 @@ h3 {
   .welcome-actions .btn-primary,
   .welcome-actions .btn-ghost {
     width: 100%;
+  }
+
+  .module-grid {
+    grid-template-columns: 1fr;
   }
 
   .role-grid {

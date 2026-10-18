@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandHeader } from "@/components/BrandHeader";
-import { HR_PROCESSES, MATURITY_LABELS, ROLES } from "@/data/hr-processes";
+import { MATURITY_LABELS } from "@/data/common";
+import { ASSESSMENT_MODULES, allRoles, getModule } from "@/data/modules";
 
 interface ProcessScoreRow {
   id: string;
@@ -43,6 +44,7 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [moduleFilter, setModuleFilter] = useState("hr");
+  const moduleProcesses = getModule(moduleFilter).processes;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DetailPayload | null>(null);
 
@@ -95,7 +97,7 @@ export function AdminDashboard() {
             (rows.reduce((a, r) => a + r.overallScore, 0) / count) * 10
           ) / 10;
 
-    const byProcess = HR_PROCESSES.map((p) => {
+    const byProcess = moduleProcesses.map((p) => {
       const scores = rows
         .flatMap((r) => r.processScores)
         .filter((s) => s.processId === p.id && s.complete && s.average > 0);
@@ -123,7 +125,7 @@ export function AdminDashboard() {
     });
 
     return { count, avgOverall, byProcess };
-  }, [rows]);
+  }, [rows, moduleProcesses]);
 
   async function logout() {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -136,6 +138,9 @@ export function AdminDashboard() {
     rework: "أخطاء/إعادة عمل",
     visibility: "ضعف تتبع الحالة",
     compliance: "امتثال",
+    budget: "ميزانية",
+    supplier: "موردين",
+    pricing: "أسعار",
     handoff: "تسليم بين الإدارات",
     reporting: "تقارير",
     duplicate: "إدخال مزدوج",
@@ -159,7 +164,11 @@ export function AdminDashboard() {
             value={moduleFilter}
             onChange={(e) => setModuleFilter(e.target.value)}
           >
-            <option value="hr">وحدة الموارد البشرية</option>
+            {ASSESSMENT_MODULES.map((m) => (
+              <option key={m.id} value={m.id}>
+                وحدة {m.title}
+              </option>
+            ))}
           </select>
           <button type="button" className="btn-ghost" onClick={load}>
             تحديث
@@ -186,7 +195,7 @@ export function AdminDashboard() {
             </div>
             <div className="kpi">
               <span>الدورات المغطاة</span>
-              <strong>{HR_PROCESSES.length}</strong>
+              <strong>{moduleProcesses.length}</strong>
             </div>
           </div>
 
@@ -254,7 +263,7 @@ export function AdminDashboard() {
                   <tbody>
                     {rows.map((r) => {
                       const role =
-                        ROLES.find((x) => x.id === r.role)?.label ?? r.role;
+                        allRoles().find((x) => x.id === r.role)?.label ?? r.role;
                       const level =
                         MATURITY_LABELS[
                           r.overallLevel as 1 | 2 | 3 | 4 | 5

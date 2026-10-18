@@ -1,13 +1,20 @@
 "use client";
 
 import { BrandHeader } from "@/components/BrandHeader";
-import { ROLES, SOP_HELP, type RoleId } from "@/data/hr-processes";
+import { SOP_HELP } from "@/data/common";
+import {
+  ASSESSMENT_MODULES,
+  getModule,
+  type ModuleId,
+} from "@/data/modules";
 import { BRAND } from "@/lib/brand";
 
 interface Props {
+  moduleId: ModuleId;
   name: string;
   department: string;
-  role: RoleId | "";
+  role: string;
+  onModuleChange: (moduleId: ModuleId) => void;
   onChange: (field: "respondentName" | "department" | "role", value: string) => void;
   onStart: () => void;
   canResume: boolean;
@@ -15,28 +22,47 @@ interface Props {
 }
 
 export function WelcomeScreen({
+  moduleId,
   name,
   department,
   role,
+  onModuleChange,
   onChange,
   onStart,
   canResume,
   onResume,
 }: Props) {
-  const ready = name.trim() && department.trim() && role;
+  const mod = getModule(moduleId);
+  const ready = name.trim() && department.trim() && role && moduleId;
 
   return (
     <section className="welcome">
       <BrandHeader />
       <div className="welcome-hero">
         <p className="eyebrow">تقييم الوضع الحالي · As-Is Assessment</p>
-        <h1>ERPNext — الموارد البشرية</h1>
+        <h1>ERPNext — {mod.title}</h1>
         <p className="lede">
-          بطاقات تفاعلية لفحص الدورات الحالية في {BRAND.shortAr} قبل التحول إلى ERPNext،
+          بطاقات تفاعلية لفحص الدورات الحالية في {BRAND.shortAr} قبل التحول إلى ERPNext.
         </p>
       </div>
 
       <div className="welcome-panel">
+        <h2>اختر وحدة التقييم</h2>
+        <div className="module-grid">
+          {ASSESSMENT_MODULES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              className={`module-card ${moduleId === m.id ? "active" : ""}`}
+              onClick={() => onModuleChange(m.id)}
+            >
+              <strong>{m.title}</strong>
+              <span>{m.description}</span>
+              <em>{m.processes.length} دورات</em>
+            </button>
+          ))}
+        </div>
+
         <h2>بيانات المشارك</h2>
         <p className="hint">يُفضّل أن يجيب كل مدير/مشرف/موظف حسب دوره الفعلي في الدورة.</p>
 
@@ -54,14 +80,14 @@ export function WelcomeScreen({
           <input
             value={department}
             onChange={(e) => onChange("department", e.target.value)}
-            placeholder="مثال : ادارة العهد"
+            placeholder="مثال: المشتريات / المخازن / المشاريع"
           />
         </label>
 
         <fieldset>
           <legend>الدور</legend>
           <div className="role-grid">
-            {ROLES.map((r) => (
+            {mod.roles.map((r) => (
               <button
                 key={r.id}
                 type="button"
@@ -77,7 +103,7 @@ export function WelcomeScreen({
 
         <div className="welcome-actions">
           <button type="button" className="btn-primary" disabled={!ready} onClick={onStart}>
-            ابدأ تقييم دورات الموارد البشرية
+            ابدأ تقييم دورات {mod.title}
           </button>
           {canResume && (
             <button type="button" className="btn-ghost" onClick={onResume}>
@@ -94,7 +120,7 @@ export function WelcomeScreen({
 
       <ul className="method-pills">
         <li>مستوى النضج ١–٥</li>
-        <li>٩ دورات (تشمل العهد)</li>
+        <li>{mod.processes.length} دورات — {mod.title}</li>
         <li>حفظ في قاعدة البيانات</li>
         <li>لوحة نتائج للإدارة</li>
       </ul>

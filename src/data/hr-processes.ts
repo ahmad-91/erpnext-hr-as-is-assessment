@@ -508,7 +508,7 @@ export const DIMENSION_LABELS: Record<string, string> = {
   problems: "مشاكل حالية",
 };
 
-/** وحدات التقييم — جاهزة للتوسعة لاحقاً (مالية، مشتريات، عهد كوحدة مستقلة…) */
+/** @deprecated استخدم ASSESSMENT_MODULES من @/data/modules */
 export const MODULES = [
   {
     id: "hr",
@@ -517,10 +517,9 @@ export const MODULES = [
     active: true,
   },
   {
-    id: "custody",
-    title: "إدارة العهد",
-    titleEn: "Custody / Assets",
-    active: false,
-    note: "تُقيَّم حالياً كدورة متقاطعة داخل حزمة HR؛ يمكن فصلها لاحقاً كوحدة مستقلة.",
+    id: "procurement",
+    title: "المشتريات",
+    titleEn: "Procurement",
+    active: true,
   },
 ] as const;

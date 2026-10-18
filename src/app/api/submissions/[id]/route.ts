@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ensureDb, prisma } from "@/lib/db";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { ROLES } from "@/data/hr-processes";
+import { allRoles } from "@/data/modules";
 
 export async function GET(
   _req: Request,
@@ -22,7 +22,8 @@ export async function GET(
     return NextResponse.json({ error: "غير موجود" }, { status: 404 });
   }
 
-  const roleLabel = ROLES.find((r) => r.id === submission.role)?.label ?? submission.role;
+  const roleLabel =
+    allRoles().find((r) => r.id === submission.role)?.label ?? submission.role;
 
   return NextResponse.json({
     ...submission,

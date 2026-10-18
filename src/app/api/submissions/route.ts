@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { HR_PROCESSES, ROLES } from "@/data/hr-processes";
+import { allRoles, getModule } from "@/data/modules";
 import { ensureDb, prisma } from "@/lib/db";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { scoreAssessment, type Answers } from "@/lib/scoring";
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       role,
       answers,
       moduleId = "hr",
-      moduleTitle = "الموارد البشرية",
+      moduleTitle,
     } = body as {
       respondentName?: string;
       department?: string;
@@ -31,11 +31,12 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!ROLES.some((r) => r.id === role)) {
+    const mod = getModule(moduleId);
+    if (!mod.roles.some((r) => r.id === role) && !allRoles().some((r) => r.id === role)) {
       return NextResponse.json({ error: "دور غير صالح" }, { status: 400 });
     }
 
-    const result = scoreAssessment(answers);
+    const result = scoreAssessment(answers, mod.processes);
     if (result.completedCount === 0) {
       return NextResponse.json(
         { error: "أكمل دورة واحدة على الأقل قبل الإرسال" },
@@ -60,8 +61,8 @@ export async function POST(req: Request) {
 
     const submission = await prisma.submission.create({
       data: {
-        moduleId,
-        moduleTitle,
+        moduleId: mod.id,
+        moduleTitle: moduleTitle?.trim() || mod.title,
         respondentName: respondentName.trim(),
         department: department.trim(),
         role,
@@ -95,6 +96,7 @@ export async function GET(req: Request) {
   await ensureDb();
   const { searchParams } = new URL(req.url);
   const moduleId = searchParams.get("moduleId") || undefined;
+  const mod = moduleId ? getModule(moduleId) : null;
 
   const submissions = await prisma.submission.findMany({
     where: moduleId ? { moduleId } : undefined,
@@ -104,7 +106,7 @@ export async function GET(req: Request) {
 
   return NextResponse.json({
     submissions,
-    processesCatalog: HR_PROCESSES.map((p) => ({
+    processesCatalog: (mod?.processes ?? []).map((p) => ({
       id: p.id,
       code: p.code,
       title: p.title,

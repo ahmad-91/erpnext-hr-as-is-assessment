@@ -1,11 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { HR_PROCESSES, type RoleId } from "@/data/hr-processes";
-import {
-  scoreAssessment,
-  type Answers,
-} from "@/lib/scoring";
+import { getModule, type ModuleId } from "@/data/modules";
+import { scoreAssessment, type Answers } from "@/lib/scoring";
 import {
   clearState,
   emptyState,
@@ -24,18 +21,19 @@ import { ResultsView } from "@/components/ResultsView";
 type Phase = "welcome" | "cards" | "results";
 
 export function AssessmentApp() {
-  const [state, setState] = useState<AssessmentState>(emptyState);
+  const [state, setState] = useState<AssessmentState>(emptyState("hr"));
   const [phase, setPhase] = useState<Phase>("welcome");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
 
+  const mod = getModule(state.moduleId);
+  const processes = mod.processes;
+
   useEffect(() => {
     const saved = loadState();
-    if (saved) {
-      setHasSaved(true);
-    }
+    if (saved) setHasSaved(true);
     setHydrated(true);
   }, []);
 
@@ -45,21 +43,31 @@ export function AssessmentApp() {
     setHasSaved(true);
   }, [state, phase, hydrated]);
 
-  const result = useMemo(() => scoreAssessment(state.answers), [state.answers]);
+  const result = useMemo(
+    () => scoreAssessment(state.answers, processes),
+    [state.answers, processes]
+  );
 
   const updateField = useCallback(
     (field: "respondentName" | "department" | "role", value: string) => {
-      setState((s) => ({
-        ...s,
-        [field]: field === "role" ? (value as RoleId) : value,
-      }));
+      setState((s) => ({ ...s, [field]: value }));
     },
     []
   );
 
+  const onModuleChange = (moduleId: ModuleId) => {
+    setState((s) => ({
+      ...s,
+      moduleId,
+      role: "",
+      answers: {},
+    }));
+    setSubmittedId(null);
+  };
+
   const startFresh = () => {
     const next = stampState({
-      ...emptyState(),
+      ...emptyState(state.moduleId),
       respondentName: state.respondentName,
       department: state.department,
       role: state.role,
@@ -69,6 +77,7 @@ export function AssessmentApp() {
     saveState(next);
     setPhase("cards");
     setActiveId(null);
+    setSubmittedId(null);
   };
 
   const resume = () => {
@@ -92,20 +101,20 @@ export function AssessmentApp() {
     }));
   };
 
-  const activeProcess = HR_PROCESSES.find((p) => p.id === activeId) ?? null;
+  const activeProcess = processes.find((p) => p.id === activeId) ?? null;
   const activeIndex = activeProcess
-    ? HR_PROCESSES.findIndex((p) => p.id === activeProcess.id)
+    ? processes.findIndex((p) => p.id === activeProcess.id)
     : -1;
 
   const doExport = () => {
-    const payload = exportPayload(state, result);
+    const payload = exportPayload(state, result, mod.title);
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: "application/json",
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `hr-as-is-${state.department || "assessment"}-${Date.now()}.json`;
+    a.download = `${state.moduleId}-as-is-${state.department || "assessment"}-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -113,7 +122,7 @@ export function AssessmentApp() {
   const resetAll = () => {
     if (!confirm("هل تريد مسح كل الإجابات المحفوظة محلياً؟")) return;
     clearState();
-    setState(emptyState());
+    setState(emptyState(state.moduleId));
     setHasSaved(false);
     setSubmittedId(null);
     setPhase("welcome");
@@ -129,8 +138,8 @@ export function AssessmentApp() {
         department: state.department,
         role: state.role,
         answers: state.answers,
-        moduleId: "hr",
-        moduleTitle: "الموارد البشرية",
+        moduleId: state.moduleId,
+        moduleTitle: mod.title,
       }),
     });
     const data = await res.json().catch(() => ({}));
@@ -147,9 +156,11 @@ export function AssessmentApp() {
   if (phase === "welcome") {
     return (
       <WelcomeScreen
+        moduleId={state.moduleId}
         name={state.respondentName}
         department={state.department}
         role={state.role}
+        onModuleChange={onModuleChange}
         onChange={updateField}
         onStart={startFresh}
         canResume={hasSaved}
@@ -161,6 +172,7 @@ export function AssessmentApp() {
   if (phase === "results") {
     return (
       <ResultsView
+        moduleTitle={mod.title}
         result={result}
         onBack={() => setPhase("cards")}
         onExport={doExport}
@@ -178,7 +190,7 @@ export function AssessmentApp() {
       <BrandHeader compact />
       <header className="topbar">
         <div>
-          <p className="eyebrow">تقييم As-Is · موارد بشرية</p>
+          <p className="eyebrow">تقييم As-Is · {mod.title}</p>
           <h1>بطاقات الدورات الحالية</h1>
           <p className="meta">
             {state.respondentName} · {state.department}
@@ -208,7 +220,7 @@ export function AssessmentApp() {
       </header>
 
       <div className="card-grid">
-        {HR_PROCESSES.map((p) => (
+        {processes.map((p) => (
           <ProcessCard
             key={p.id}
             process={p}
@@ -238,9 +250,9 @@ export function AssessmentApp() {
           answers={state.answers[activeProcess.id] ?? {}}
           onChange={(qid, val) => setAnswer(activeProcess.id, qid, val)}
           onClose={() => setActiveId(null)}
-          hasNext={activeIndex < HR_PROCESSES.length - 1}
+          hasNext={activeIndex < processes.length - 1}
           onNext={() => {
-            const next = HR_PROCESSES[activeIndex + 1];
+            const next = processes[activeIndex + 1];
             if (next) setActiveId(next.id);
           }}
         />

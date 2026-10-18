@@ -1,19 +1,21 @@
-import type { RoleId } from "@/data/hr-processes";
+import type { ModuleId } from "@/data/modules";
 import type { Answers } from "@/lib/scoring";
 
-const KEY = "erpnext-hr-as-is-v1";
+const KEY = "erpnext-as-is-v2";
 
 export interface AssessmentState {
+  moduleId: ModuleId;
   respondentName: string;
   department: string;
-  role: RoleId | "";
+  role: string;
   startedAt: string;
   updatedAt: string;
   answers: Record<string, Answers>;
 }
 
-export function emptyState(): AssessmentState {
+export function emptyState(moduleId: ModuleId = "hr"): AssessmentState {
   return {
+    moduleId,
     respondentName: "",
     department: "",
     role: "",
@@ -37,7 +39,9 @@ export function loadState(): AssessmentState | null {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as AssessmentState;
+    const parsed = JSON.parse(raw) as AssessmentState;
+    if (!parsed.moduleId) parsed.moduleId = "hr";
+    return parsed;
   } catch {
     return null;
   }
@@ -54,10 +58,15 @@ export function clearState() {
   localStorage.removeItem(KEY);
 }
 
-export function exportPayload(state: AssessmentState, result: unknown) {
+export function exportPayload(
+  state: AssessmentState,
+  result: unknown,
+  moduleTitle: string
+) {
   return {
     meta: {
-      assessment: "ERPNext As-Is — الموارد البشرية",
+      assessment: `ERPNext As-Is — ${moduleTitle}`,
+      moduleId: state.moduleId,
       methodology: "Process Maturity (People / Process / Technology / Data / Control)",
       exportedAt: new Date().toISOString(),
     },

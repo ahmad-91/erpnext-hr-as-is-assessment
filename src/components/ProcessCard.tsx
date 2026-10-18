@@ -1,10 +1,10 @@
 "use client";
 
-import type { HrProcess } from "@/data/hr-processes";
+import type { AssessmentProcess } from "@/data/common";
 import { maturityLabel, type ProcessScore } from "@/lib/scoring";
 
 interface Props {
-  process: HrProcess;
+  process: AssessmentProcess;
   score?: ProcessScore;
   onOpen: () => void;
 }

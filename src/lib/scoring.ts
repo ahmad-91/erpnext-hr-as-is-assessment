@@ -1,9 +1,10 @@
 import {
-  HR_PROCESSES,
   MATURITY_LABELS,
+  type AssessmentProcess,
   type MaturityLevel,
   type Question,
-} from "@/data/hr-processes";
+} from "@/data/common";
+import { HR_PROCESSES } from "@/data/hr-processes";
 
 export type Answers = Record<string, string | string[]>;
 
@@ -42,7 +43,6 @@ function scoreForAnswer(question: Question, value: string | string[] | undefined
   if (question.type === "multi") {
     const selected = Array.isArray(value) ? value : [value];
     if (selected.includes("none") && selected.length === 1) return 5;
-    // More current problems → lower maturity contribution
     const problemCount = selected.filter((id) => id !== "none").length;
     if (problemCount === 0) return 5;
     if (problemCount === 1) return 4;
@@ -54,8 +54,10 @@ function scoreForAnswer(question: Question, value: string | string[] | undefined
   return opt?.score ?? null;
 }
 
-export function scoreProcess(processId: string, answers: Answers): ProcessScore {
-  const process = HR_PROCESSES.find((p) => p.id === processId)!;
+export function scoreProcess(
+  process: AssessmentProcess,
+  answers: Answers
+): ProcessScore {
   const required = process.questions.filter((q) => q.required);
   let answered = 0;
   const scores: number[] = [];
@@ -89,7 +91,7 @@ export function scoreProcess(processId: string, answers: Answers): ProcessScore 
   }
 
   return {
-    processId,
+    processId: process.id,
     title: process.title,
     code: process.code,
     average,
@@ -101,11 +103,14 @@ export function scoreProcess(processId: string, answers: Answers): ProcessScore 
   };
 }
 
-export function scoreAssessment(allAnswers: Record<string, Answers>): AssessmentResult {
-  const processes = HR_PROCESSES.map((p) =>
-    scoreProcess(p.id, allAnswers[p.id] ?? {})
+export function scoreAssessment(
+  allAnswers: Record<string, Answers>,
+  processes: AssessmentProcess[] = HR_PROCESSES
+): AssessmentResult {
+  const scoredProcesses = processes.map((p) =>
+    scoreProcess(p, allAnswers[p.id] ?? {})
   );
-  const completed = processes.filter((p) => p.complete);
+  const completed = scoredProcesses.filter((p) => p.complete);
   const scored = completed.filter((p) => p.average > 0);
   const overall =
     scored.length === 0
@@ -117,9 +122,9 @@ export function scoreAssessment(allAnswers: Record<string, Answers>): Assessment
   return {
     overall,
     level: toLevel(overall || 1),
-    processes,
+    processes: scoredProcesses,
     completedCount: completed.length,
-    totalProcesses: HR_PROCESSES.length,
+    totalProcesses: processes.length,
   };
 }
 
@@ -127,6 +132,9 @@ export function maturityLabel(level: MaturityLevel) {
   return MATURITY_LABELS[level];
 }
 
-export function isProcessComplete(processId: string, answers: Answers): boolean {
-  return scoreProcess(processId, answers).complete;
+export function isProcessComplete(
+  process: AssessmentProcess,
+  answers: Answers
+): boolean {
+  return scoreProcess(process, answers).complete;
 }

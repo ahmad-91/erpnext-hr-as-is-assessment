@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { BrandHeader } from "@/components/BrandHeader";
-import { DIMENSION_LABELS } from "@/data/hr-processes";
+import { DIMENSION_LABELS } from "@/data/common";
 import { maturityLabel, type AssessmentResult } from "@/lib/scoring";
 
 interface Props {
+  moduleTitle: string;
   result: AssessmentResult;
   onBack: () => void;
   onExport: () => void;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function ResultsView({
+  moduleTitle,
   result,
   onBack,
   onExport,
@@ -57,7 +59,7 @@ export function ResultsView({
       <header className="results-header">
         <div>
           <p className="eyebrow">نتائج تقييم الوضع الحالي</p>
-          <h1>ملخص نضج دورات الموارد البشرية</h1>
+          <h1>ملخص نضج دورات {moduleTitle}</h1>
           <p>
             اكتمل {result.completedCount} من {result.totalProcesses} دورات · المتوسط العام{" "}
             <strong style={{ color: overall.color }}>

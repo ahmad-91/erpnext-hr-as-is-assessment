@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { DIMENSION_LABELS, type HrProcess } from "@/data/hr-processes";
+import { DIMENSION_LABELS, type AssessmentProcess } from "@/data/common";
 import type { Answers } from "@/lib/scoring";
 
 interface Props {
-  process: HrProcess;
+  process: AssessmentProcess;
   answers: Answers;
   onChange: (questionId: string, value: string | string[]) => void;
   onClose: () => void;
