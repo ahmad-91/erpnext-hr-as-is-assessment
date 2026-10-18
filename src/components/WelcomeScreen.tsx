@@ -32,8 +32,7 @@ export function WelcomeScreen({
         <p className="eyebrow">تقييم الوضع الحالي · As-Is Assessment</p>
         <h1>ERPNext — الموارد البشرية</h1>
         <p className="lede">
-          بطاقات تفاعلية لفحص الدورات الحالية في {BRAND.shortAr} قبل التحول إلى ERPNext، وفق
-          منهجية نضج العمليات (الأشخاص · الإجراءات · التقنية · البيانات · الضوابط).
+          بطاقات تفاعلية لفحص الدورات الحالية في {BRAND.shortAr} قبل التحول إلى ERPNext،
         </p>
       </div>
 
