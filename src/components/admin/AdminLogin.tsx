@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { BrandHeader } from "@/components/BrandHeader";
 
 export function AdminLogin() {
   const router = useRouter();
@@ -34,6 +35,7 @@ export function AdminLogin() {
 
   return (
     <section className="welcome" style={{ maxWidth: 480 }}>
+      <BrandHeader compact />
       <div className="welcome-hero">
         <p className="eyebrow">لوحة الإدارة</p>
         <h1>نتائج تقييم As-Is</h1>

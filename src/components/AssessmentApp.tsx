@@ -15,6 +15,7 @@ import {
   stampState,
   type AssessmentState,
 } from "@/lib/storage";
+import { BrandHeader } from "@/components/BrandHeader";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { ProcessCard } from "@/components/ProcessCard";
 import { ProcessPanel } from "@/components/ProcessPanel";
@@ -170,21 +171,28 @@ export function AssessmentApp() {
     );
   }
 
+  const progressPct = (result.completedCount / result.totalProcesses) * 100;
+
   return (
-    <div className="app-shell">
+    <div className="app-shell has-mobile-bar">
+      <BrandHeader compact />
       <header className="topbar">
         <div>
           <p className="eyebrow">تقييم As-Is · موارد بشرية</p>
           <h1>بطاقات الدورات الحالية</h1>
           <p className="meta">
-            {state.respondentName} · {state.department} · اكتمل{" "}
-            {result.completedCount}/{result.totalProcesses}
+            {state.respondentName} · {state.department}
           </p>
-        </div>
-        <div className="topbar-actions">
-          <div className="progress-track" aria-hidden>
-            <i style={{ width: `${(result.completedCount / result.totalProcesses) * 100}%` }} />
+          <div className="progress-block">
+            <div className="progress-track" aria-hidden>
+              <i style={{ width: `${progressPct}%` }} />
+            </div>
+            <span className="progress-label">
+              اكتمل {result.completedCount} من {result.totalProcesses}
+            </span>
           </div>
+        </div>
+        <div className="topbar-actions desktop-only">
           <button
             type="button"
             className="btn-primary"
@@ -208,6 +216,20 @@ export function AssessmentApp() {
             onOpen={() => setActiveId(p.id)}
           />
         ))}
+      </div>
+
+      <div className="mobile-action-bar">
+        <div className="progress-track" aria-hidden>
+          <i style={{ width: `${progressPct}%` }} />
+        </div>
+        <button
+          type="button"
+          className="btn-primary"
+          disabled={result.completedCount === 0}
+          onClick={() => setPhase("results")}
+        >
+          عرض النتائج ({result.completedCount}/{result.totalProcesses})
+        </button>
       </div>
 
       {activeProcess && (

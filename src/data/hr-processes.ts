@@ -4,7 +4,8 @@ export type RoleId =
   | "dept_manager"
   | "supervisor"
   | "employee"
-  | "finance";
+  | "finance"
+  | "custody";
 
 export type MaturityLevel = 1 | 2 | 3 | 4 | 5;
 
@@ -70,6 +71,11 @@ export const ROLES: { id: RoleId; label: string; hint: string }[] = [
     label: "مالية / رواتب",
     hint: "مسير الرواتب وحماية الأجور",
   },
+  {
+    id: "custody",
+    label: "إدارة العهد / الأصول",
+    hint: "صرف العهد واستلامها ومتابعتها",
+  },
 ];
 
 const TOOL_OPTIONS: Option[] = [
@@ -128,6 +134,16 @@ export const SOP_HELP =
 
 function commonQuestions(processId: string, extras: Question[] = []): Question[] {
   return [
+    {
+      id: `${processId}_as_is`,
+      dimension: "process",
+      text: "صف الدورة الحالية كما تحدث فعلياً عندكم (اختياري)",
+      type: "text",
+      helpText:
+        "اكتب خطوات الدورة من البداية حتى النهاية كما تراها. إذا لا تعرف المسار كاملاً، اكتب دورك أنت في هذه الدورة وأين تقع مشاركتك (مثلاً: أبدأ الطلب فقط، أو أوافق، أو أنفّذ في النهاية).",
+      placeholder:
+        "مثال: الموظف يقدّم طلباً عبر واتساب → المدير يوافق شفهياً → الموارد البشرية تكمل…\nأو: دوري الموافقة فقط بعد ما يوصلني الطلب من الموظف.",
+    },
     {
       id: `${processId}_tool`,
       dimension: "technology",
@@ -346,6 +362,51 @@ export const HR_PROCESSES: HrProcess[] = [
     ]),
   },
   {
+    id: "custody",
+    code: 6,
+    title: "إدارة العهد",
+    subtitle: "صرف العهد، متابعتها، واستلامها عند النقل أو إنهاء الخدمة",
+    description:
+      "العهد غالباً مسؤولية إدارة مستقلة (إدارة العهد / الأصول / تقنية المعلومات)، لكنها تتقاطع إلزامياً مع الموارد البشرية عند مباشرة الموظف وإخلاء الطرف. هذه البطاقة تقيّم الدورة الحالية للعهد وربطها بـ HR.",
+    steps: [
+      "طلب / صرف عهدة",
+      "تسجيل العهد على الموظف",
+      "المتابعة والجرد",
+      "الاستلام عند النقل أو إنهاء الخدمة",
+    ],
+    questions: commonQuestions("custody", [
+      {
+        id: "custody_owner",
+        dimension: "people",
+        text: "من الجهة المالكة فعلياً لدورة العهد اليوم؟",
+        type: "single",
+        required: true,
+        options: [
+          { id: "hr_only", label: "الموارد البشرية بالكامل", score: 2 },
+          { id: "custody_dept", label: "إدارة العهد / الأصول بشكل مستقل", score: 4 },
+          { id: "it", label: "تقنية المعلومات (أجهزة وأنظمة)", score: 3 },
+          { id: "finance", label: "المالية / المحاسبة", score: 3 },
+          { id: "mixed", label: "موزعة بين أكثر من جهة بدون مسار موحّد", score: 1 },
+          { id: "integrated", label: "إدارة عهد واضحة مع ربط منظم مع HR", score: 5 },
+        ],
+      },
+      {
+        id: "custody_hr_link",
+        dimension: "control",
+        text: "كيف ترتبط العهد بمباشرة الموظف وإخلاء الطرف؟",
+        type: "single",
+        required: true,
+        options: [
+          { id: "none", label: "لا يوجد ربط واضح مع HR", score: 1 },
+          { id: "manual", label: "تذكير يدوي / واتساب عند الحاجة", score: 2 },
+          { id: "checklist", label: "بند ضمن نموذج إخلاء الطرف الورقي", score: 3 },
+          { id: "partial_sys", label: "متابعة في نظام أو ملف لكن غير مربوطة لحظياً", score: 4 },
+          { id: "blocking", label: "لا يُغلق إخلاء الطرف قبل استلام العهد في النظام", score: 5 },
+        ],
+      },
+    ]),
+  },
+  {
     id: "employee_mgmt",
     code: 8,
     title: "إدارة الموظفين",
@@ -401,10 +462,10 @@ export const HR_PROCESSES: HrProcess[] = [
     title: "إنهاء الخدمة",
     subtitle: "الاستقالة، إخلاء الطرف، التسوية، ومكافأة نهاية الخدمة",
     description:
-      "فحص مسار إنهاء الخدمة من الطلب حتى إخلاء الطرف والتسوية النهائية ومكافأة نهاية الخدمة.",
+      "فحص مسار إنهاء الخدمة من الطلب حتى إخلاء الطرف والتسوية النهائية ومكافأة نهاية الخدمة — بما في ذلك استلام العهد من الإدارات المعنية.",
     steps: [
       "الاستقالة / انتهاء العقد / الفصل",
-      "إخلاء الطرف",
+      "إخلاء الطرف (ومنها العهد)",
       "التسوية النهائية",
       "مكافأة نهاية الخدمة",
     ],
@@ -447,12 +508,19 @@ export const DIMENSION_LABELS: Record<string, string> = {
   problems: "مشاكل حالية",
 };
 
-/** وحدات التقييم — جاهزة للتوسعة لاحقاً (مالية، مشتريات…) */
+/** وحدات التقييم — جاهزة للتوسعة لاحقاً (مالية، مشتريات، عهد كوحدة مستقلة…) */
 export const MODULES = [
   {
     id: "hr",
     title: "الموارد البشرية",
     titleEn: "Human Resources",
     active: true,
+  },
+  {
+    id: "custody",
+    title: "إدارة العهد",
+    titleEn: "Custody / Assets",
+    active: false,
+    note: "تُقيَّم حالياً كدورة متقاطعة داخل حزمة HR؛ يمكن فصلها لاحقاً كوحدة مستقلة.",
   },
 ] as const;

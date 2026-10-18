@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { BrandHeader } from "@/components/BrandHeader";
 import { HR_PROCESSES, MATURITY_LABELS, ROLES } from "@/data/hr-processes";
 
 interface ProcessScoreRow {
@@ -142,6 +143,7 @@ export function AdminDashboard() {
 
   return (
     <div className="admin-shell">
+      <BrandHeader compact />
       <header className="topbar">
         <div>
           <p className="eyebrow">لوحة الأدمن · ERPNext As-Is</p>
@@ -327,6 +329,11 @@ export function AdminDashboard() {
                   } catch {
                     problems = [];
                   }
+                  const processAnswers = detail.answers?.[p.processId] ?? {};
+                  const asIs = processAnswers[`${p.processId}_as_is`];
+                  const asIsText = typeof asIs === "string" ? asIs.trim() : "";
+                  const notes = processAnswers[`${p.processId}_notes`];
+                  const notesText = typeof notes === "string" ? notes.trim() : "";
                   return (
                     <li key={p.id}>
                       <div>
@@ -342,6 +349,16 @@ export function AdminDashboard() {
                               .map((id) => problemLabels[id] ?? id)
                               .join("، ")}`}
                         </small>
+                        {asIsText && (
+                          <p className="detail-narrative">
+                            <b>وصف الدورة / الدور:</b> {asIsText}
+                          </p>
+                        )}
+                        {notesText && (
+                          <p className="detail-narrative">
+                            <b>ملاحظة:</b> {notesText}
+                          </p>
+                        )}
                       </div>
                       <em style={{ color: m.color }}>
                         {p.complete ? p.average.toFixed(1) : "—"}

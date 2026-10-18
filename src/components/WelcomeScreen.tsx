@@ -1,6 +1,8 @@
 "use client";
 
+import { BrandHeader } from "@/components/BrandHeader";
 import { ROLES, SOP_HELP, type RoleId } from "@/data/hr-processes";
+import { BRAND } from "@/lib/brand";
 
 interface Props {
   name: string;
@@ -25,12 +27,13 @@ export function WelcomeScreen({
 
   return (
     <section className="welcome">
+      <BrandHeader />
       <div className="welcome-hero">
         <p className="eyebrow">تقييم الوضع الحالي · As-Is Assessment</p>
         <h1>ERPNext — الموارد البشرية</h1>
         <p className="lede">
-          بطاقات تفاعلية لفحص الدورات الحالية قبل التحول إلى ERPNext، وفق منهجية نضج
-          العمليات العالمية (الأشخاص · الإجراءات · التقنية · البيانات · الضوابط).
+          بطاقات تفاعلية لفحص الدورات الحالية في {BRAND.shortAr} قبل التحول إلى ERPNext، وفق
+          منهجية نضج العمليات (الأشخاص · الإجراءات · التقنية · البيانات · الضوابط).
         </p>
       </div>
 
@@ -43,7 +46,6 @@ export function WelcomeScreen({
           <input
             value={name}
             onChange={(e) => onChange("respondentName", e.target.value)}
-            placeholder="مثال: أحمد العتيبي"
             autoComplete="name"
           />
         </label>
@@ -53,7 +55,7 @@ export function WelcomeScreen({
           <input
             value={department}
             onChange={(e) => onChange("department", e.target.value)}
-            placeholder="مثال: الموارد البشرية / العمليات"
+            placeholder="مثال : ادارة العهد"
           />
         </label>
 
@@ -93,7 +95,7 @@ export function WelcomeScreen({
 
       <ul className="method-pills">
         <li>مستوى النضج ١–٥</li>
-        <li>٨ دورات HR</li>
+        <li>٩ دورات (تشمل العهد)</li>
         <li>حفظ في قاعدة البيانات</li>
         <li>لوحة نتائج للإدارة</li>
       </ul>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BrandHeader } from "@/components/BrandHeader";
 import { DIMENSION_LABELS } from "@/data/hr-processes";
 import { maturityLabel, type AssessmentResult } from "@/lib/scoring";
 
@@ -52,6 +53,7 @@ export function ResultsView({
 
   return (
     <section className="results">
+      <BrandHeader compact />
       <header className="results-header">
         <div>
           <p className="eyebrow">نتائج تقييم الوضع الحالي</p>

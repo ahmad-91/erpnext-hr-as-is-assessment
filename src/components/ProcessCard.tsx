@@ -39,6 +39,7 @@ export function ProcessCard({ process, score, onOpen }: Props) {
           نضج {score.average.toFixed(1)} · {level.ar}
         </div>
       )}
+      <span className="card-cta">{complete ? "مراجعة الإجابات ←" : "اضغط للإجابة ←"}</span>
     </button>
   );
 }
