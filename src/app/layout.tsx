@@ -43,13 +43,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <footer className="site-footer">
           <span>{BRAND.nameAr}</span>
           <span>·</span>
-          <a href="/">التقييم</a>
+          <a href="/">الوحدات</a>
+          <span>·</span>
+          <a href="/hr">الموارد البشرية</a>
+          <span>·</span>
+          <a href="/procurement">المشتريات</a>
           <span>·</span>
           <a href="/admin">لوحة الأدمن</a>
-          <span>·</span>
-          <a href={BRAND.website} target="_blank" rel="noreferrer">
-            {BRAND.website.replace("https://", "")}
-          </a>
         </footer>
       </body>
     </html>

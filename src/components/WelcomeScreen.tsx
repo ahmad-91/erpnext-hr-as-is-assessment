@@ -2,11 +2,7 @@
 
 import { BrandHeader } from "@/components/BrandHeader";
 import { SOP_HELP } from "@/data/common";
-import {
-  ASSESSMENT_MODULES,
-  getModule,
-  type ModuleId,
-} from "@/data/modules";
+import { getModule, type ModuleId } from "@/data/modules";
 import { BRAND } from "@/lib/brand";
 
 interface Props {
@@ -14,7 +10,6 @@ interface Props {
   name: string;
   department: string;
   role: string;
-  onModuleChange: (moduleId: ModuleId) => void;
   onChange: (field: "respondentName" | "department" | "role", value: string) => void;
   onStart: () => void;
   canResume: boolean;
@@ -26,45 +21,29 @@ export function WelcomeScreen({
   name,
   department,
   role,
-  onModuleChange,
   onChange,
   onStart,
   canResume,
   onResume,
 }: Props) {
   const mod = getModule(moduleId);
-  const ready = name.trim() && department.trim() && role && moduleId;
+  const ready = name.trim() && department.trim() && role;
 
   return (
     <section className="welcome">
       <BrandHeader />
       <div className="welcome-hero">
-        <p className="eyebrow">تقييم الوضع الحالي · As-Is Assessment</p>
+        <p className="eyebrow">تقييم الوضع الحالي · As-Is</p>
         <h1>ERPNext — {mod.title}</h1>
         <p className="lede">
-          بطاقات تفاعلية لفحص الدورات الحالية في {BRAND.shortAr} قبل التحول إلى ERPNext.
+          هذا الرابط مخصص لوحدة <strong>{mod.title}</strong> في {BRAND.shortAr}. أجب حسب
+          دورك الفعلي في الدورات التالية.
         </p>
       </div>
 
       <div className="welcome-panel">
-        <h2>اختر وحدة التقييم</h2>
-        <div className="module-grid">
-          {ASSESSMENT_MODULES.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              className={`module-card ${moduleId === m.id ? "active" : ""}`}
-              onClick={() => onModuleChange(m.id)}
-            >
-              <strong>{m.title}</strong>
-              <span>{m.description}</span>
-              <em>{m.processes.length} دورات</em>
-            </button>
-          ))}
-        </div>
-
         <h2>بيانات المشارك</h2>
-        <p className="hint">يُفضّل أن يجيب كل مدير/مشرف/موظف حسب دوره الفعلي في الدورة.</p>
+        <p className="hint">{mod.description}</p>
 
         <label>
           الاسم
@@ -80,7 +59,7 @@ export function WelcomeScreen({
           <input
             value={department}
             onChange={(e) => onChange("department", e.target.value)}
-            placeholder="مثال: المشتريات / المخازن / المشاريع"
+            placeholder="مثال: اسم إدارتك أو قسمك"
           />
         </label>
 
@@ -103,11 +82,11 @@ export function WelcomeScreen({
 
         <div className="welcome-actions">
           <button type="button" className="btn-primary" disabled={!ready} onClick={onStart}>
-            ابدأ تقييم دورات {mod.title}
+            ابدأ تقييم {mod.title}
           </button>
           {canResume && (
             <button type="button" className="btn-ghost" onClick={onResume}>
-              استئناف تقييم سابق محفوظ محلياً
+              استئناف تقييم سابق لهذه الوحدة
             </button>
           )}
         </div>
@@ -120,9 +99,8 @@ export function WelcomeScreen({
 
       <ul className="method-pills">
         <li>مستوى النضج ١–٥</li>
-        <li>{mod.processes.length} دورات — {mod.title}</li>
+        <li>{mod.processes.length} دورات</li>
         <li>حفظ في قاعدة البيانات</li>
-        <li>لوحة نتائج للإدارة</li>
       </ul>
     </section>
   );

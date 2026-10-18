@@ -20,22 +20,30 @@ import { ResultsView } from "@/components/ResultsView";
 
 type Phase = "welcome" | "cards" | "results";
 
-export function AssessmentApp() {
-  const [state, setState] = useState<AssessmentState>(emptyState("hr"));
+interface Props {
+  moduleId: ModuleId;
+}
+
+export function AssessmentApp({ moduleId }: Props) {
+  const [state, setState] = useState<AssessmentState>(() => emptyState(moduleId));
   const [phase, setPhase] = useState<Phase>("welcome");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
 
-  const mod = getModule(state.moduleId);
+  const mod = getModule(moduleId);
   const processes = mod.processes;
 
   useEffect(() => {
-    const saved = loadState();
-    if (saved) setHasSaved(true);
+    setState(emptyState(moduleId));
+    setPhase("welcome");
+    setActiveId(null);
+    setSubmittedId(null);
+    const saved = loadState(moduleId);
+    setHasSaved(Boolean(saved));
     setHydrated(true);
-  }, []);
+  }, [moduleId]);
 
   useEffect(() => {
     if (!hydrated || phase === "welcome") return;
@@ -55,19 +63,9 @@ export function AssessmentApp() {
     []
   );
 
-  const onModuleChange = (moduleId: ModuleId) => {
-    setState((s) => ({
-      ...s,
-      moduleId,
-      role: "",
-      answers: {},
-    }));
-    setSubmittedId(null);
-  };
-
   const startFresh = () => {
     const next = stampState({
-      ...emptyState(state.moduleId),
+      ...emptyState(moduleId),
       respondentName: state.respondentName,
       department: state.department,
       role: state.role,
@@ -81,9 +79,9 @@ export function AssessmentApp() {
   };
 
   const resume = () => {
-    const saved = loadState();
+    const saved = loadState(moduleId);
     if (saved) {
-      setState(saved);
+      setState({ ...saved, moduleId });
       setPhase("cards");
     }
   };
@@ -114,15 +112,15 @@ export function AssessmentApp() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${state.moduleId}-as-is-${state.department || "assessment"}-${Date.now()}.json`;
+    a.download = `${moduleId}-as-is-${state.department || "assessment"}-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const resetAll = () => {
-    if (!confirm("هل تريد مسح كل الإجابات المحفوظة محلياً؟")) return;
-    clearState();
-    setState(emptyState(state.moduleId));
+    if (!confirm("هل تريد مسح كل الإجابات المحفوظة محلياً لهذه الوحدة؟")) return;
+    clearState(moduleId);
+    setState(emptyState(moduleId));
     setHasSaved(false);
     setSubmittedId(null);
     setPhase("welcome");
@@ -138,7 +136,7 @@ export function AssessmentApp() {
         department: state.department,
         role: state.role,
         answers: state.answers,
-        moduleId: state.moduleId,
+        moduleId,
         moduleTitle: mod.title,
       }),
     });
@@ -156,11 +154,10 @@ export function AssessmentApp() {
   if (phase === "welcome") {
     return (
       <WelcomeScreen
-        moduleId={state.moduleId}
+        moduleId={moduleId}
         name={state.respondentName}
         department={state.department}
         role={state.role}
-        onModuleChange={onModuleChange}
         onChange={updateField}
         onStart={startFresh}
         canResume={hasSaved}

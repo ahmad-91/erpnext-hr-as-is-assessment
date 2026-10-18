@@ -13,6 +13,8 @@ export interface AssessmentModule {
   titleEn: string;
   active: true;
   description: string;
+  /** المسار العام للمشاركة — مثال: /hr */
+  path: string;
   processes: AssessmentProcess[];
   roles: RoleOption[];
 }
@@ -23,6 +25,7 @@ export const ASSESSMENT_MODULES: AssessmentModule[] = [
     title: "الموارد البشرية",
     titleEn: "Human Resources",
     active: true,
+    path: "/hr",
     description: "التوظيف، العقود، الحضور، الإجازات، الرواتب، العهد، التقييم، وإنهاء الخدمة",
     processes: HR_PROCESSES,
     roles: HR_ROLES,
@@ -32,12 +35,17 @@ export const ASSESSMENT_MODULES: AssessmentModule[] = [
     title: "المشتريات",
     titleEn: "Procurement",
     active: true,
+    path: "/procurement",
     description:
       "طلب الشراء، الاعتماد، عروض الأسعار، أمر الشراء، الاستلام، الفواتير، والموردين",
     processes: PROCUREMENT_PROCESSES,
     roles: PROCUREMENT_ROLES,
   },
 ];
+
+export function isModuleId(id: string): id is ModuleId {
+  return ASSESSMENT_MODULES.some((m) => m.id === id);
+}
 
 export function getModule(id: ModuleId | string | undefined): AssessmentModule {
   return (

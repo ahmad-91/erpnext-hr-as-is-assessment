@@ -1,7 +1,9 @@
 import type { ModuleId } from "@/data/modules";
 import type { Answers } from "@/lib/scoring";
 
-const KEY = "erpnext-as-is-v2";
+function storageKey(moduleId: ModuleId) {
+  return `erpnext-as-is-v2-${moduleId}`;
+}
 
 export interface AssessmentState {
   moduleId: ModuleId;
@@ -13,7 +15,7 @@ export interface AssessmentState {
   answers: Record<string, Answers>;
 }
 
-export function emptyState(moduleId: ModuleId = "hr"): AssessmentState {
+export function emptyState(moduleId: ModuleId): AssessmentState {
   return {
     moduleId,
     respondentName: "",
@@ -34,13 +36,13 @@ export function stampState(state: AssessmentState): AssessmentState {
   };
 }
 
-export function loadState(): AssessmentState | null {
+export function loadState(moduleId: ModuleId): AssessmentState | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(storageKey(moduleId));
     if (!raw) return null;
     const parsed = JSON.parse(raw) as AssessmentState;
-    if (!parsed.moduleId) parsed.moduleId = "hr";
+    parsed.moduleId = moduleId;
     return parsed;
   } catch {
     return null;
@@ -50,12 +52,12 @@ export function loadState(): AssessmentState | null {
 export function saveState(state: AssessmentState) {
   if (typeof window === "undefined") return;
   const next = stampState(state);
-  localStorage.setItem(KEY, JSON.stringify(next));
+  localStorage.setItem(storageKey(state.moduleId), JSON.stringify(next));
 }
 
-export function clearState() {
+export function clearState(moduleId: ModuleId) {
   if (typeof window === "undefined") return;
-  localStorage.removeItem(KEY);
+  localStorage.removeItem(storageKey(moduleId));
 }
 
 export function exportPayload(

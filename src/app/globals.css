@@ -230,46 +230,77 @@ h3 {
   margin-bottom: 0.6rem;
 }
 
-.module-grid {
+.module-link-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  gap: 0.85rem;
 }
 
-.module-card {
-  text-align: right;
+.module-link-card {
+  background: var(--card);
   border: 1px solid var(--line);
-  background: #fbfcfb;
-  border-radius: 16px;
-  padding: 1rem;
-  cursor: pointer;
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: var(--shadow);
+  padding: 1.15rem;
   display: grid;
-  gap: 0.35rem;
-  min-height: 110px;
+  gap: 1rem;
 }
 
-.module-card strong {
-  font-size: 1.05rem;
+@media (min-width: 720px) {
+  .module-link-card {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+
+  .module-link-actions {
+    flex-direction: column;
+    min-width: 160px;
+  }
 }
 
-.module-card span {
+.module-link-card strong {
+  display: block;
+  font-size: 1.2rem;
+  margin-bottom: 0.35rem;
+}
+
+.module-link-card p {
+  margin: 0 0 0.55rem;
   color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1.55;
+  font-size: 0.92rem;
 }
 
-.module-card em {
-  font-style: normal;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.module-card.active {
-  border-color: var(--accent);
+.module-path {
+  display: inline-block;
   background: var(--accent-soft);
-  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--brown);
+  border-radius: 8px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  direction: ltr;
+}
+
+.module-link-card small {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.module-link-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.portal-admin-hint {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.portal-admin-hint a {
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .role-grid {
@@ -1177,8 +1208,13 @@ h3 {
     width: 100%;
   }
 
-  .module-grid {
-    grid-template-columns: 1fr;
+  .module-link-actions {
+    flex-direction: column;
+  }
+
+  .module-link-actions .btn-primary,
+  .module-link-actions .btn-ghost {
+    width: 100%;
   }
 
   .role-grid {
