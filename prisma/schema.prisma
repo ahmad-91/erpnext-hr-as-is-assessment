@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// إجابة تقييم واحدة من مشارك — جاهزة لتعدد الوحدات (hr, finance…)
+model Submission {
+  id             String   @id @default(cuid())
+  moduleId       String   @default("hr")
+  moduleTitle    String   @default("الموارد البشرية")
+  respondentName String
+  department     String
+  role           String
+  overallScore   Float    @default(0)
+  overallLevel   Int      @default(1)
+  completedCount Int      @default(0)
+  totalProcesses Int      @default(0)
+  resultJson     String
+  answersJson    String
+  createdAt      DateTime @default(now())
+
+  processScores ProcessScore[]
+
+  @@index([moduleId])
+  @@index([createdAt])
+  @@index([department])
+}
+
+model ProcessScore {
+  id           String @id @default(cuid())
+  submissionId String
+  processId    String
+  processCode  Int
+  processTitle String
+  average      Float
+  level        Int
+  complete     Boolean
+  problemsJson String @default("[]")
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([processId])
+  @@index([submissionId])
+}

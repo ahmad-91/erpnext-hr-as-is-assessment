@@ -17,7 +17,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ar" dir="rtl" className={`${ibmArabic.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <footer className="site-footer">
+          <a href="/">التقييم</a>
+          <span>·</span>
+          <a href="/admin">لوحة الأدمن</a>
+        </footer>
+      </body>
     </html>
   );
 }

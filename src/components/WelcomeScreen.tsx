@@ -1,6 +1,6 @@
 "use client";
 
-import { ROLES, type RoleId } from "@/data/hr-processes";
+import { ROLES, SOP_HELP, type RoleId } from "@/data/hr-processes";
 
 interface Props {
   name: string;
@@ -86,11 +86,16 @@ export function WelcomeScreen({
         </div>
       </div>
 
+      <aside className="glossary-card">
+        <h2>ماذا يعني SOP؟</h2>
+        <p>{SOP_HELP}</p>
+      </aside>
+
       <ul className="method-pills">
         <li>مستوى النضج ١–٥</li>
         <li>٨ دورات HR</li>
-        <li>حفظ محلي في المتصفح</li>
-        <li>تصدير النتائج JSON</li>
+        <li>حفظ في قاعدة البيانات</li>
+        <li>لوحة نتائج للإدارة</li>
       </ul>
     </section>
   );

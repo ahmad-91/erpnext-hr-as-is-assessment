@@ -54,6 +54,7 @@ export function ProcessPanel({
                   {q.required && <span className="req">إلزامي</span>}
                 </div>
                 <h3>{q.text}</h3>
+                {q.helpText && <p className="help-callout">{q.helpText}</p>}
 
                 {q.type === "single" && q.options && (
                   <div className="options">

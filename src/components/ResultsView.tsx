@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { DIMENSION_LABELS } from "@/data/hr-processes";
 import { maturityLabel, type AssessmentResult } from "@/lib/scoring";
 
@@ -8,10 +9,21 @@ interface Props {
   onBack: () => void;
   onExport: () => void;
   onReset: () => void;
+  onSubmit: () => Promise<void>;
+  submittedId: string | null;
 }
 
-export function ResultsView({ result, onBack, onExport, onReset }: Props) {
+export function ResultsView({
+  result,
+  onBack,
+  onExport,
+  onReset,
+  onSubmit,
+  submittedId,
+}: Props) {
   const overall = maturityLabel(result.level);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const dimAgg: Record<string, number[]> = {};
   for (const p of result.processes) {
@@ -25,6 +37,18 @@ export function ResultsView({ result, onBack, onExport, onReset }: Props) {
     dim,
     avg: Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10,
   }));
+
+  async function handleSubmit() {
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await onSubmit();
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : "فشل الإرسال");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <section className="results">
@@ -43,7 +67,7 @@ export function ResultsView({ result, onBack, onExport, onReset }: Props) {
           <button type="button" className="btn-ghost" onClick={onBack}>
             العودة للبطاقات
           </button>
-          <button type="button" className="btn-primary" onClick={onExport}>
+          <button type="button" className="btn-ghost" onClick={onExport}>
             تصدير JSON
           </button>
         </div>
@@ -99,6 +123,28 @@ export function ResultsView({ result, onBack, onExport, onReset }: Props) {
         </ul>
       </div>
 
+      <div className="submit-box">
+        <h2>إرسال للإدارة</h2>
+        <p>
+          احفظ إجاباتك في قاعدة البيانات ليظهر ملخصها في لوحة الأدمن مع بقية المشاركين.
+        </p>
+        {submittedId ? (
+          <p className="submit-ok">
+            تم الإرسال بنجاح. رقم المشاركة: <code>{submittedId}</code>
+          </p>
+        ) : (
+          <button
+            type="button"
+            className="btn-primary"
+            disabled={submitting || result.completedCount === 0}
+            onClick={handleSubmit}
+          >
+            {submitting ? "جاري الإرسال…" : "إرسال التقييم الآن"}
+          </button>
+        )}
+        {submitError && <p className="form-error">{submitError}</p>}
+      </div>
+
       <div className="insights">
         <h2>قراءة أولية لتجهيز ERPNext</h2>
         <ul>
@@ -106,7 +152,8 @@ export function ResultsView({ result, onBack, onExport, onReset }: Props) {
             الدورات ذات النضج الأقل أولوية لتوثيق As-Is وتصميم To-Be قبل الإعداد في النظام.
           </li>
           <li>
-            نقاط الألم المتكررة (تأخير، إدخال مزدوج، امتثال) تُحوَّل إلى متطلبات تكوين وWorkflow.
+            المشاكل الحالية المتكررة (تأخير، إدخال مزدوج، امتثال) تُحوَّل إلى متطلبات تكوين
+            وWorkflow في ERPNext.
           </li>
           <li>
             يُفضّل جمع إجابات من أدوار متعددة لنفس الدورة ثم مقارنة الفجوات في ورشة توحيد.

@@ -28,6 +28,7 @@ export function AssessmentApp() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
+  const [submittedId, setSubmittedId] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = loadState();
@@ -113,8 +114,29 @@ export function AssessmentApp() {
     clearState();
     setState(emptyState());
     setHasSaved(false);
+    setSubmittedId(null);
     setPhase("welcome");
     setActiveId(null);
+  };
+
+  const submitToServer = async () => {
+    const res = await fetch("/api/submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        respondentName: state.respondentName,
+        department: state.department,
+        role: state.role,
+        answers: state.answers,
+        moduleId: "hr",
+        moduleTitle: "الموارد البشرية",
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.error || "فشل إرسال التقييم");
+    }
+    setSubmittedId(data.id as string);
   };
 
   if (!hydrated) {
@@ -142,6 +164,8 @@ export function AssessmentApp() {
         onBack={() => setPhase("cards")}
         onExport={doExport}
         onReset={resetAll}
+        onSubmit={submitToServer}
+        submittedId={submittedId}
       />
     );
   }

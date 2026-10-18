@@ -42,12 +42,12 @@ function scoreForAnswer(question: Question, value: string | string[] | undefined
   if (question.type === "multi") {
     const selected = Array.isArray(value) ? value : [value];
     if (selected.includes("none") && selected.length === 1) return 5;
-    // More pain points → lower maturity contribution
-    const painCount = selected.filter((id) => id !== "none").length;
-    if (painCount === 0) return 5;
-    if (painCount === 1) return 4;
-    if (painCount === 2) return 3;
-    if (painCount === 3) return 2;
+    // More current problems → lower maturity contribution
+    const problemCount = selected.filter((id) => id !== "none").length;
+    if (problemCount === 0) return 5;
+    if (problemCount === 1) return 4;
+    if (problemCount === 2) return 3;
+    if (problemCount === 3) return 2;
     return 1;
   }
   const opt = question.options?.find((o) => o.id === value);

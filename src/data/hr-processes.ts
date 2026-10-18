@@ -19,12 +19,14 @@ export interface Option {
 
 export interface Question {
   id: string;
-  dimension: "people" | "process" | "technology" | "data" | "control" | "pain";
+  dimension: "people" | "process" | "technology" | "data" | "control" | "problems";
   text: string;
   type: QuestionType;
   options?: Option[];
   required?: boolean;
   placeholder?: string;
+  /** شرح يظهر تحت السؤال للمصطلحات (مثل SOP) */
+  helpText?: string;
 }
 
 export interface HrProcess {
@@ -110,16 +112,19 @@ const CONTROL_OPTIONS: Option[] = [
   { id: "audit", label: "موافقات + سجل تدقيق كامل", score: 5 },
 ];
 
-const PAIN_OPTIONS: Option[] = [
-  { id: "delays", label: "تأخير في الإنجاز" },
-  { id: "rework", label: "إعادة عمل / أخطاء متكررة" },
-  { id: "visibility", label: "ضعف الرؤية عن حالة الطلب" },
-  { id: "compliance", label: "مخاطر امتثال (قوى / حماية أجور / عقود)" },
-  { id: "handoff", label: "صعوبة التسليم بين الإدارات" },
-  { id: "reporting", label: "صعوبة استخراج التقارير" },
-  { id: "duplicate", label: "إدخال مزدوج للبيانات" },
-  { id: "none", label: "لا توجد نقاط ألم جوهرية حالياً" },
+const CURRENT_PROBLEMS: Option[] = [
+  { id: "delays", label: "تأخير في إنجاز الطلبات" },
+  { id: "rework", label: "أخطاء متكررة أو إعادة عمل" },
+  { id: "visibility", label: "صعوبة معرفة حالة الطلب أين وصل" },
+  { id: "compliance", label: "مشاكل امتثال (قوى / حماية أجور / عقود)" },
+  { id: "handoff", label: "تعثر التسليم بين الإدارات أو الأقسام" },
+  { id: "reporting", label: "صعوبة استخراج تقارير دقيقة بسرعة" },
+  { id: "duplicate", label: "إدخال نفس البيانات أكثر من مرة" },
+  { id: "none", label: "لا توجد مشاكل جوهرية حالياً" },
 ];
+
+export const SOP_HELP =
+  "SOP تعني Standard Operating Procedure — أي «إجراءات العمل القياسية»: وثيقة مكتوبة تشرح خطوة بخطوة كيف تُنفَّذ العملية (من يبدأها، من يعتمدها، وما النماذج المطلوبة). إن لم يكن لديكم ملف مكتوب ومعتمد، فالإجابة غالباً «لا يوجد توثيق» أو «معرفة شفوية».";
 
 function commonQuestions(processId: string, extras: Question[] = []): Question[] {
   return [
@@ -134,10 +139,11 @@ function commonQuestions(processId: string, extras: Question[] = []): Question[]
     {
       id: `${processId}_doc`,
       dimension: "process",
-      text: "ما مستوى توثيق الإجراءات (SOP) لهذه الدورة؟",
+      text: "ما مستوى توثيق إجراءات العمل القياسية (SOP) لهذه الدورة؟",
       type: "single",
       required: true,
       options: DOC_OPTIONS,
+      helpText: SOP_HELP,
     },
     {
       id: `${processId}_roles`,
@@ -178,20 +184,20 @@ function commonQuestions(processId: string, extras: Question[] = []): Question[]
       ],
     },
     {
-      id: `${processId}_pain`,
-      dimension: "pain",
-      text: "ما أبرز نقاط الألم في هذه الدورة؟ (يمكن اختيار أكثر من خيار)",
+      id: `${processId}_problems`,
+      dimension: "problems",
+      text: "ما أبرز المشاكل الحالية في هذه الدورة؟ (يمكن اختيار أكثر من خيار)",
       type: "multi",
       required: true,
-      options: PAIN_OPTIONS,
+      options: CURRENT_PROBLEMS,
     },
     ...extras,
     {
       id: `${processId}_notes`,
-      dimension: "pain",
-      text: "ملاحظات إضافية أو أمثلة واقعية تود توثيقها",
+      dimension: "problems",
+      text: "صف مشكلة حالية أو مثالاً واقعياً تود توثيقه للإدارة",
       type: "text",
-      placeholder: "اكتب باختصار ما يحدث فعلياً اليوم…",
+      placeholder: "مثال: الطلب يتأخر عند المدير أسبوعين، أو الرصيد غير محدّث…",
     },
   ];
 }
@@ -438,5 +444,15 @@ export const DIMENSION_LABELS: Record<string, string> = {
   technology: "التقنية والأدوات",
   data: "البيانات",
   control: "الضوابط والامتثال",
-  pain: "نقاط الألم",
+  problems: "مشاكل حالية",
 };
+
+/** وحدات التقييم — جاهزة للتوسعة لاحقاً (مالية، مشتريات…) */
+export const MODULES = [
+  {
+    id: "hr",
+    title: "الموارد البشرية",
+    titleEn: "Human Resources",
+    active: true,
+  },
+] as const;
