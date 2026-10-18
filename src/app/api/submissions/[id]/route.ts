@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { ensureDb, prisma } from "@/lib/db";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { ROLES } from "@/data/hr-processes";
 
@@ -11,6 +11,7 @@ export async function GET(
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
+  await ensureDb();
   const { id } = await ctx.params;
   const submission = await prisma.submission.findUnique({
     where: { id },

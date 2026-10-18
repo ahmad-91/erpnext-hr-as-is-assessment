@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { HR_PROCESSES, ROLES } from "@/data/hr-processes";
-import { prisma } from "@/lib/db";
+import { ensureDb, prisma } from "@/lib/db";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { scoreAssessment, type Answers } from "@/lib/scoring";
 
 export async function POST(req: Request) {
   try {
+    await ensureDb();
     const body = await req.json();
     const {
       respondentName,
@@ -91,6 +92,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }
 
+  await ensureDb();
   const { searchParams } = new URL(req.url);
   const moduleId = searchParams.get("moduleId") || undefined;
 
