@@ -15,8 +15,11 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
 
-/** يضمن وجود الجداول على SQLite (مفيد لـ /tmp على Vercel) */
+/** جداول Postgres تُنشأ عبر prisma db push. مسار SQLite المحلي فقط ينشئها هنا. */
 export async function ensureDb() {
+  const url = process.env.DATABASE_URL ?? "";
+  if (!url.startsWith("file:")) return;
+
   if (!globalForPrisma.schemaReady) {
     globalForPrisma.schemaReady = (async () => {
       await prisma.$executeRawUnsafe(`

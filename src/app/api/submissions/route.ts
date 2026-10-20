@@ -9,6 +9,7 @@ export async function POST(req: Request) {
     await ensureDb();
     const body = await req.json();
     const {
+      id,
       respondentName,
       department,
       role,
@@ -16,6 +17,7 @@ export async function POST(req: Request) {
       moduleId = "hr",
       moduleTitle,
     } = body as {
+      id?: string;
       respondentName?: string;
       department?: string;
       role?: string;
@@ -37,12 +39,6 @@ export async function POST(req: Request) {
     }
 
     const result = scoreAssessment(answers, mod.processes);
-    if (result.completedCount === 0) {
-      return NextResponse.json(
-        { error: "أكمل دورة واحدة على الأقل قبل الإرسال" },
-        { status: 400 }
-      );
-    }
 
     const processScoresData = result.processes.map((p) => {
       const processAnswers = answers[p.processId] ?? {};
@@ -59,23 +55,37 @@ export async function POST(req: Request) {
       };
     });
 
-    const submission = await prisma.submission.create({
-      data: {
-        moduleId: mod.id,
-        moduleTitle: moduleTitle?.trim() || mod.title,
-        respondentName: respondentName.trim(),
-        department: department.trim(),
-        role,
-        overallScore: result.overall,
-        overallLevel: result.level,
-        completedCount: result.completedCount,
-        totalProcesses: result.totalProcesses,
-        resultJson: JSON.stringify(result),
-        answersJson: JSON.stringify(answers),
-        processScores: { create: processScoresData },
-      },
-      include: { processScores: true },
-    });
+    const data = {
+      moduleId: mod.id,
+      moduleTitle: moduleTitle?.trim() || mod.title,
+      respondentName: respondentName.trim(),
+      department: department.trim(),
+      role,
+      overallScore: result.overall,
+      overallLevel: result.level,
+      completedCount: result.completedCount,
+      totalProcesses: result.totalProcesses,
+      resultJson: JSON.stringify(result),
+      answersJson: JSON.stringify(answers),
+    };
+
+    const existing = id
+      ? await prisma.submission.findUnique({ where: { id } })
+      : null;
+
+    const submission = existing
+      ? await prisma.$transaction(async (tx) => {
+          await tx.processScore.deleteMany({ where: { submissionId: existing.id } });
+          return tx.submission.update({
+            where: { id: existing.id },
+            data: { ...data, processScores: { create: processScoresData } },
+            include: { processScores: true },
+          });
+        })
+      : await prisma.submission.create({
+          data: { ...data, processScores: { create: processScoresData } },
+          include: { processScores: true },
+        });
 
     return NextResponse.json({
       id: submission.id,
@@ -95,7 +105,8 @@ export async function GET(req: Request) {
 
   await ensureDb();
   const { searchParams } = new URL(req.url);
-  const moduleId = searchParams.get("moduleId") || undefined;
+  const requested = searchParams.get("moduleId") || undefined;
+  const moduleId = requested && requested !== "all" ? requested : undefined;
   const mod = moduleId ? getModule(moduleId) : null;
 
   const submissions = await prisma.submission.findMany({

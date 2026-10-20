@@ -43,8 +43,11 @@ export function AdminDashboard() {
   const [rows, setRows] = useState<SubmissionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [moduleFilter, setModuleFilter] = useState("hr");
-  const moduleProcesses = getModule(moduleFilter).processes;
+  const [moduleFilter, setModuleFilter] = useState("all");
+  const moduleProcesses =
+    moduleFilter === "all"
+      ? ASSESSMENT_MODULES.flatMap((m) => m.processes)
+      : getModule(moduleFilter).processes;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DetailPayload | null>(null);
 
@@ -170,6 +173,7 @@ export function AdminDashboard() {
             value={moduleFilter}
             onChange={(e) => setModuleFilter(e.target.value)}
           >
+            <option value="all">كل الوحدات</option>
             {ASSESSMENT_MODULES.map((m) => (
               <option key={m.id} value={m.id}>
                 وحدة {m.title}
@@ -258,6 +262,7 @@ export function AdminDashboard() {
                   <thead>
                     <tr>
                       <th>التاريخ</th>
+                      <th>الوحدة</th>
                       <th>الاسم</th>
                       <th>الإدارة</th>
                       <th>الدور</th>
@@ -279,6 +284,7 @@ export function AdminDashboard() {
                           <td>
                             {new Date(r.createdAt).toLocaleString("ar-SA")}
                           </td>
+                          <td>{r.moduleTitle}</td>
                           <td>{r.respondentName}</td>
                           <td>{r.department}</td>
                           <td>{role}</td>

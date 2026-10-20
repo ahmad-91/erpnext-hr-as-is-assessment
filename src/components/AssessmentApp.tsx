@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getModule, type ModuleId } from "@/data/modules";
 import { scoreAssessment, type Answers } from "@/lib/scoring";
 import {
@@ -31,15 +31,20 @@ export function AssessmentApp({ moduleId }: Props) {
   const [hydrated, setHydrated] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
   const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const [saveLabel, setSaveLabel] = useState("");
+  const submissionIdRef = useRef<string | null>(null);
+  const saveSeq = useRef(0);
 
   const mod = getModule(moduleId);
   const processes = mod.processes;
 
   useEffect(() => {
+    submissionIdRef.current = null;
     setState(emptyState(moduleId));
     setPhase("welcome");
     setActiveId(null);
     setSubmittedId(null);
+    setSaveLabel("");
     const saved = loadState(moduleId);
     setHasSaved(Boolean(saved));
     setHydrated(true);
@@ -64,6 +69,8 @@ export function AssessmentApp({ moduleId }: Props) {
   );
 
   const startFresh = () => {
+    submissionIdRef.current = null;
+    setSubmittedId(null);
     const next = stampState({
       ...emptyState(moduleId),
       respondentName: state.respondentName,
@@ -120,6 +127,7 @@ export function AssessmentApp({ moduleId }: Props) {
   const resetAll = () => {
     if (!confirm("هل تريد مسح كل الإجابات المحفوظة محلياً لهذه الوحدة؟")) return;
     clearState(moduleId);
+    submissionIdRef.current = null;
     setState(emptyState(moduleId));
     setHasSaved(false);
     setSubmittedId(null);
@@ -127,11 +135,17 @@ export function AssessmentApp({ moduleId }: Props) {
     setActiveId(null);
   };
 
-  const submitToServer = async () => {
+  const submitToServer = useCallback(async () => {
+    if (!state.respondentName.trim() || !state.department.trim() || !state.role) {
+      throw new Error("بيانات المشارك ناقصة");
+    }
+    const seq = ++saveSeq.current;
+    setSaveLabel("جاري الحفظ…");
     const res = await fetch("/api/submissions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        id: submissionIdRef.current,
         respondentName: state.respondentName,
         department: state.department,
         role: state.role,
@@ -141,11 +155,25 @@ export function AssessmentApp({ moduleId }: Props) {
       }),
     });
     const data = await res.json().catch(() => ({}));
+    if (seq !== saveSeq.current) return;
     if (!res.ok) {
+      setSaveLabel("تعذر الحفظ");
       throw new Error(data.error || "فشل إرسال التقييم");
     }
+    submissionIdRef.current = data.id as string;
     setSubmittedId(data.id as string);
-  };
+    setSaveLabel("تم الحفظ في قاعدة البيانات");
+  }, [state, moduleId, mod.title]);
+
+  useEffect(() => {
+    if (!hydrated || phase === "welcome") return;
+    const timer = setTimeout(() => {
+      void submitToServer().catch(() => {
+        setSaveLabel("تعذر الحفظ — تحقق من الاتصال");
+      });
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [state, phase, hydrated, submitToServer]);
 
   if (!hydrated) {
     return <div className="loading">جاري التحميل…</div>;
@@ -191,6 +219,7 @@ export function AssessmentApp({ moduleId }: Props) {
           <h1>بطاقات الدورات الحالية</h1>
           <p className="meta">
             {state.respondentName} · {state.department}
+            {saveLabel ? ` · ${saveLabel}` : ""}
           </p>
           <div className="progress-block">
             <div className="progress-track" aria-hidden>
