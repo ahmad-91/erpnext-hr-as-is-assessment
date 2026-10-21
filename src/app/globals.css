@@ -845,8 +845,9 @@ h3 {
 .panel-body {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 1.15rem;
+  padding: 0 1.15rem 1.25rem;
   flex: 1;
+  min-height: 0;
   overscroll-behavior: contain;
 }
 

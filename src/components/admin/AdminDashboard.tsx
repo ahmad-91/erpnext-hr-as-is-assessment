@@ -347,6 +347,7 @@ export function AdminDashboard() {
               </button>
             </header>
 
+            <div className="panel-body">
             <ul className="detail-scores">
               {detail.processScores
                 .slice()
@@ -399,6 +400,7 @@ export function AdminDashboard() {
                   );
                 })}
             </ul>
+            </div>
           </div>
         </div>
       )}
