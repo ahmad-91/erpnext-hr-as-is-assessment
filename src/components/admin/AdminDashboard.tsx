@@ -174,7 +174,7 @@ export function AdminDashboard() {
           <p className="eyebrow">لوحة الأدمن · ERPNext As-Is</p>
           <h1>نتائج التقييمات</h1>
           <p className="meta">
-            {stats.count} مشاركة · متوسط النضج العام{" "}
+            {stats.count} مشاركة · متوسط تطور الدورات{" "}
             <strong>{stats.avgOverall.toFixed(1)}</strong> / ٥
           </p>
         </div>
@@ -191,6 +191,9 @@ export function AdminDashboard() {
               </option>
             ))}
           </select>
+          <a href="/admin/methodology" className="btn-ghost">
+            منهجية التقييم
+          </a>
           <button type="button" className="btn-ghost" onClick={load}>
             تحديث
           </button>
@@ -211,7 +214,7 @@ export function AdminDashboard() {
               <strong>{stats.count}</strong>
             </div>
             <div className="kpi">
-              <span>متوسط النضج</span>
+              <span>متوسط التطور</span>
               <strong>{stats.avgOverall.toFixed(1)}</strong>
             </div>
             <div className="kpi">
@@ -221,7 +224,7 @@ export function AdminDashboard() {
           </div>
 
           <section className="dim-bars">
-            <h2>متوسط النضج حسب الدورة</h2>
+            <h2>متوسط التطور حسب الدورة</h2>
             {stats.byProcess.map(({ process, avg, responses }) => (
               <div key={process.id} className="dim-row admin-process-row">
                 <span>
@@ -277,7 +280,7 @@ export function AdminDashboard() {
                       <th>الاسم</th>
                       <th>الإدارة</th>
                       <th>الدور</th>
-                      <th>النضج</th>
+                      <th>التطور</th>
                       <th>المكتمل</th>
                       <th></th>
                     </tr>
@@ -333,7 +336,7 @@ export function AdminDashboard() {
                 <span className="code">{detail.moduleTitle}</span>
                 <h2>{detail.respondentName}</h2>
                 <p>
-                  {detail.department} · {detail.roleLabel} · نضج{" "}
+                  {detail.department} · {detail.roleLabel} · تطور{" "}
                   {detail.overallScore.toFixed(1)}
                 </p>
               </div>
