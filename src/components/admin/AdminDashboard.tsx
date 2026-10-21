@@ -153,6 +153,17 @@ export function AdminDashboard() {
     materials: "فروقات عهدة",
     emergency: "طوارئ خارج السجل",
     uds_mismatch: "فروقات UDS",
+    stockout: "نفاد مواد",
+    issue_delay: "تأخر صرف",
+    no_wo: "صرف بلا أمر عمل",
+    variance: "فروقات جرد",
+    location: "موقع تخزين مجهول",
+    idle: "مواد راكدة",
+    damage: "تالف أو فاقد",
+    return_lag: "تأخر إرجاع فائض الشركة",
+    custody_mix: "خلط الشركة مع الأمانات",
+    custody_gap: "فرق أمانات الكهرباء",
+    custody_return: "أمانات لم تُرجع",
   };
 
   return (

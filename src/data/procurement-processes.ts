@@ -43,12 +43,17 @@ export const PROCUREMENT_ROLES: RoleOption[] = [
   },
 ];
 
-const pq = (processId: string, extras: Parameters<typeof commonQuestions>[1] = []) =>
+const pq = (
+  processId: string,
+  topic: string,
+  extras: Parameters<typeof commonQuestions>[1] = []
+) =>
   commonQuestions(
     processId,
     extras,
     PROCUREMENT_PROBLEMS,
-    "مثال: أمر الشراء يتأخر عند الاعتماد، أو الاستلام لا يطابق المواصفات…"
+    "مثال: أمر الشراء يتأخر عند الاعتماد، أو الاستلام لا يطابق المواصفات…",
+    topic
   );
 
 export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
@@ -60,7 +65,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "تقييم كيف تُرفع حالياً طلبات الشراء من الإدارات: المواصفات، الكميات، المبرر، والمرفقات.",
     steps: ["تحديد الاحتياج", "تعبئة الطلب", "إرفاق المواصفات", "إرسال للمشتريات"],
-    questions: pq("pr_request", [
+    questions: pq("pr_request", "طلب الشراء", [
       {
         id: "pr_request_channel",
         dimension: "technology",
@@ -85,7 +90,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "فحص كيف تُعتمد طلبات الشراء حسب القيمة والصلاحيات وارتباطها بالميزانية قبل التنفيذ.",
     steps: ["مراجعة الطلب", "التحقق من الميزانية", "اعتماد المدير", "تحويل للتنفيذ"],
-    questions: pq("pr_approval", [
+    questions: pq("pr_approval", "اعتماد طلبات الشراء", [
       {
         id: "pr_approval_budget",
         dimension: "control",
@@ -110,7 +115,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "تقييم دورة طلب عروض الأسعار (RFQ) ومقارنة العروض وتوثيق سبب اختيار المورد.",
     steps: ["طلب عروض", "استلام العروض", "المقارنة الفنية/المالية", "اختيار المورد"],
-    questions: pq("rfq", [
+    questions: pq("rfq", "عروض الأسعار والمقارنة", [
       {
         id: "rfq_compare",
         dimension: "process",
@@ -135,7 +140,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "فحص إصدار أوامر الشراء (PO): الشروط، الأسعار، الكميات، الاعتماد، وإرسالها للمورد.",
     steps: ["إنشاء أمر الشراء", "الاعتماد", "الإرسال للمورد", "تأكيد الاستلام من المورد"],
-    questions: pq("purchase_order", [
+    questions: pq("purchase_order", "أمر الشراء", [
       {
         id: "po_format",
         dimension: "technology",
@@ -160,7 +165,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "تقييم استلام المواد/الخدمات في الموقع أو المخزن، والفحص مقابل المواصفات والكميات في أمر الشراء.",
     steps: ["إشعار وصول", "الاستلام", "الفحص", "تأكيد الكميات"],
-    questions: pq("goods_receipt", [
+    questions: pq("goods_receipt", "الاستلام والفحص", [
       {
         id: "grn_match",
         dimension: "control",
@@ -185,7 +190,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "فحص دورة فاتورة المورد: المطابقة مع أمر الشراء والاستلام، ثم الاعتماد والترحيل للدفع.",
     steps: ["استلام الفاتورة", "المطابقة", "الاعتماد", "الترحيل للدفع"],
-    questions: pq("supplier_invoice", [
+    questions: pq("supplier_invoice", "فاتورة المورد والمطابقة", [
       {
         id: "invoice_3way",
         dimension: "control",
@@ -210,7 +215,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "تقييم سجل الموردين: البيانات، الاعتماد، التقييم بعد التوريد، والقائمة السوداء إن وُجدت.",
     steps: ["تسجيل المورد", "الاعتماد", "التقييم", "تحديث السجل"],
-    questions: pq("suppliers", [
+    questions: pq("suppliers", "إدارة الموردين", [
       {
         id: "supplier_master",
         dimension: "data",
@@ -235,7 +240,7 @@ export const PROCUREMENT_PROCESSES: AssessmentProcess[] = [
     description:
       "فحص كيف تُتابع أوامر الشراء المفتوحة، التأخير عن الموعد، والتنسيق مع الموقع/المخزن.",
     steps: ["جدولة التسليم", "المتابعة", "التنبيه عند التأخير", "الإغلاق"],
-    questions: pq("delivery_followup", [
+    questions: pq("delivery_followup", "متابعة التوريد والتأخير", [
       {
         id: "delivery_tracking",
         dimension: "process",

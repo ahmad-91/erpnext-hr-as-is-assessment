@@ -51,6 +51,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <span>·</span>
           <a href="/work-orders">أوامر العمل</a>
           <span>·</span>
+          <a href="/warehouse">المستودعات</a>
+          <span>·</span>
           <a href="/admin">لوحة الأدمن</a>
         </footer>
       </body>

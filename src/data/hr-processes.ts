@@ -1,3 +1,5 @@
+import { cycleOptions, topicScale } from "@/data/common";
+
 export type RoleId =
   | "hr_manager"
   | "hr_specialist"
@@ -78,46 +80,6 @@ export const ROLES: { id: RoleId; label: string; hint: string }[] = [
   },
 ];
 
-const TOOL_OPTIONS: Option[] = [
-  { id: "manual", label: "يدوي بالكامل (ورق / واتساب / بريد)", score: 1 },
-  { id: "excel", label: "جداول Excel / ملفات مشتركة", score: 2 },
-  { id: "partial", label: "نظام جزئي + عمل يدوي مكمل", score: 3 },
-  { id: "system", label: "نظام متخصص متكامل نسبياً", score: 4 },
-  { id: "integrated", label: "نظام متكامل مع باقي الإدارات", score: 5 },
-];
-
-const DOC_OPTIONS: Option[] = [
-  { id: "none", label: "لا يوجد توثيق رسمي", score: 1 },
-  { id: "informal", label: "معرفة شفوية / تعتمد على أشخاص", score: 2 },
-  { id: "partial", label: "إجراءات جزئية غير محدّثة دائماً", score: 3 },
-  { id: "documented", label: "إجراءات مكتوبة ومعتمدة", score: 4 },
-  { id: "managed", label: "إجراءات محدثة مع مراجعة دورية", score: 5 },
-];
-
-const ROLE_CLARITY: Option[] = [
-  { id: "unclear", label: "غير واضحة — تداخل أو تأخير متكرر", score: 1 },
-  { id: "partial", label: "واضحة جزئياً حسب الأشخاص", score: 2 },
-  { id: "mostly", label: "واضحة في معظم الحالات", score: 3 },
-  { id: "defined", label: "محددة في مصفوفة صلاحيات", score: 4 },
-  { id: "enforced", label: "محددة ومطبقة ومراقبة", score: 5 },
-];
-
-const DATA_QUALITY: Option[] = [
-  { id: "poor", label: "بيانات ناقصة أو متعارضة كثيراً", score: 1 },
-  { id: "manual", label: "تعتمد على إدخال يدوي متكرر", score: 2 },
-  { id: "ok", label: "مقبولة مع أخطاء متفرقة", score: 3 },
-  { id: "good", label: "جيدة ومتاحة عند الحاجة", score: 4 },
-  { id: "trusted", label: "مصدر واحد موثوق (Single Source of Truth)", score: 5 },
-];
-
-const CONTROL_OPTIONS: Option[] = [
-  { id: "none", label: "لا مسار موافقات واضح / لا أثر تدقيق", score: 1 },
-  { id: "informal", label: "موافقات شفهية أو عبر واتساب", score: 2 },
-  { id: "email", label: "موافقات بريدية بدون تتبع منهجي", score: 3 },
-  { id: "workflow", label: "مسار موافقات موثق في نظام", score: 4 },
-  { id: "audit", label: "موافقات + سجل تدقيق كامل", score: 5 },
-];
-
 const CURRENT_PROBLEMS: Option[] = [
   { id: "delays", label: "تأخير في إنجاز الطلبات" },
   { id: "rework", label: "أخطاء متكررة أو إعادة عمل" },
@@ -132,77 +94,75 @@ const CURRENT_PROBLEMS: Option[] = [
 export const SOP_HELP =
   "SOP تعني Standard Operating Procedure — أي «إجراءات العمل القياسية»: وثيقة مكتوبة تشرح خطوة بخطوة كيف تُنفَّذ العملية (من يبدأها، من يعتمدها، وما النماذج المطلوبة). إن لم يكن لديكم ملف مكتوب ومعتمد، فالإجابة غالباً «لا يوجد توثيق» أو «معرفة شفوية».";
 
-function commonQuestions(processId: string, extras: Question[] = []): Question[] {
+function commonQuestions(
+  processId: string,
+  topic: string,
+  extras: Question[] = []
+): Question[] {
   return [
     {
       id: `${processId}_as_is`,
       dimension: "process",
-      text: "صف الدورة الحالية كما تحدث فعلياً عندكم (اختياري)",
+      text: `صف «${topic}» كما يحدث فعلياً عندكم (اختياري)`,
       type: "text",
       helpText:
-        "اكتب خطوات الدورة من البداية حتى النهاية كما تراها. إذا لا تعرف المسار كاملاً، اكتب دورك أنت في هذه الدورة وأين تقع مشاركتك (مثلاً: أبدأ الطلب فقط، أو أوافق، أو أنفّذ في النهاية).",
+        "اكتب خطوات هذه الدورة من البداية حتى النهاية كما تراها. إذا لا تعرف المسار كاملاً، اكتب دورك أنت وأين تقع مشاركتك.",
       placeholder:
         "مثال: الموظف يقدّم طلباً عبر واتساب → المدير يوافق شفهياً → الموارد البشرية تكمل…\nأو: دوري الموافقة فقط بعد ما يوصلني الطلب من الموظف.",
     },
     {
       id: `${processId}_tool`,
       dimension: "technology",
-      text: "كيف تُنفَّذ هذه الدورة حالياً؟",
+      text: `بأي أداة يُنفَّذ «${topic}» اليوم؟`,
       type: "single",
       required: true,
-      options: TOOL_OPTIONS,
+      options: topicScale(topic, "tool"),
     },
     {
       id: `${processId}_doc`,
       dimension: "process",
-      text: "ما مستوى توثيق إجراءات العمل القياسية (SOP) لهذه الدورة؟",
+      text: `هل خطوات «${topic}» مكتوبة ومعتمدة؟`,
       type: "single",
       required: true,
-      options: DOC_OPTIONS,
+      options: topicScale(topic, "doc"),
       helpText: SOP_HELP,
     },
     {
       id: `${processId}_roles`,
       dimension: "people",
-      text: "ما مدى وضوح الأدوار والمسؤوليات والصلاحيات؟",
+      text: `من يبدأ «${topic}» ومن يعتمدها ومن ينفّذها؟`,
       type: "single",
       required: true,
-      options: ROLE_CLARITY,
+      options: topicScale(topic, "roles"),
     },
     {
       id: `${processId}_data`,
       dimension: "data",
-      text: "ما تقييمك لجودة واكتمال البيانات المرتبطة بهذه الدورة؟",
+      text: `ما حال بيانات «${topic}» من حيث الاكتمال والتعارض؟`,
       type: "single",
       required: true,
-      options: DATA_QUALITY,
+      options: topicScale(topic, "data"),
     },
     {
       id: `${processId}_control`,
       dimension: "control",
-      text: "كيف تتم الموافقات والضوابط ومسار التدقيق؟",
+      text: `كيف يُعتمد العمل في «${topic}» وهل يبقى أثر للقرار؟`,
       type: "single",
       required: true,
-      options: CONTROL_OPTIONS,
+      options: topicScale(topic, "control"),
     },
     {
       id: `${processId}_cycle`,
       dimension: "process",
-      text: "كم يستغرق إنجاز طلب نموذجي من البداية حتى الإغلاق؟",
+      text: `كم يستغرق إغلاق طلب واحد في «${topic}» من البداية حتى النهاية؟`,
       type: "single",
       required: true,
-      options: [
-        { id: "d1", label: "أقل من يوم", score: 5 },
-        { id: "d2_3", label: "٢–٣ أيام", score: 4 },
-        { id: "w1", label: "حوالي أسبوع", score: 3 },
-        { id: "w2", label: "أسبوعان أو أكثر", score: 2 },
-        { id: "unclear", label: "غير محدد / يختلف كثيراً", score: 1 },
-      ],
+      options: cycleOptions(topic),
     },
     {
       id: `${processId}_problems`,
       dimension: "problems",
-      text: "ما أبرز المشاكل الحالية في هذه الدورة؟ (يمكن اختيار أكثر من خيار)",
+      text: `ما أبرز المشاكل الحالية في «${topic}»؟ (يمكن اختيار أكثر من خيار)`,
       type: "multi",
       required: true,
       options: CURRENT_PROBLEMS,
@@ -233,7 +193,7 @@ export const HR_PROCESSES: HrProcess[] = [
       "عقد عمل",
       "مباشرة الموظف",
     ],
-    questions: commonQuestions("recruitment", [
+    questions: commonQuestions("recruitment", "التوظيف والتعيين", [
       {
         id: "recruitment_qiwa",
         dimension: "control",
@@ -258,7 +218,7 @@ export const HR_PROCESSES: HrProcess[] = [
     description:
       "فحص كيفية إصدار العقود، توثيقها وتجديدها عبر قوى، ومتابعة تواريخ الانتهاء.",
     steps: ["إصدار العقد", "توثيق قوى", "تجديد", "متابعة الانتهاء"],
-    questions: commonQuestions("contracts", [
+    questions: commonQuestions("contracts", "عقود الموظفين", [
       {
         id: "contracts_expiry",
         dimension: "process",
@@ -283,7 +243,7 @@ export const HR_PROCESSES: HrProcess[] = [
     description:
       "تقييم تسجيل الدوام واحتساب التأخير والغياب والعمل الإضافي وربطه بالرواتب.",
     steps: ["تسجيل الدوام", "التأخير", "الغياب", "العمل الإضافي"],
-    questions: commonQuestions("attendance", [
+    questions: commonQuestions("attendance", "الحضور والانصراف", [
       {
         id: "attendance_source",
         dimension: "technology",
@@ -313,7 +273,7 @@ export const HR_PROCESSES: HrProcess[] = [
       "اعتماد الموارد البشرية",
       "تحديث الرصيد",
     ],
-    questions: commonQuestions("leave", [
+    questions: commonQuestions("leave", "الإجازات والمغادرات", [
       {
         id: "leave_balance",
         dimension: "data",
@@ -344,7 +304,7 @@ export const HR_PROCESSES: HrProcess[] = [
       "الصرف",
       "حماية الأجور",
     ],
-    questions: commonQuestions("payroll", [
+    questions: commonQuestions("payroll", "مسير الرواتب", [
       {
         id: "payroll_wps",
         dimension: "control",
@@ -374,7 +334,7 @@ export const HR_PROCESSES: HrProcess[] = [
       "المتابعة والجرد",
       "الاستلام عند النقل أو إنهاء الخدمة",
     ],
-    questions: commonQuestions("custody", [
+    questions: commonQuestions("custody", "إدارة العهد", [
       {
         id: "custody_owner",
         dimension: "people",
@@ -414,7 +374,7 @@ export const HR_PROCESSES: HrProcess[] = [
     description:
       "فحص تحديث بيانات الموظفين وعمليات الترقية والنقل وتغيير المسمى والراتب.",
     steps: ["تحديث البيانات", "الترقيات", "النقل", "تغيير المسمى والراتب"],
-    questions: commonQuestions("employee_mgmt", [
+    questions: commonQuestions("employee_mgmt", "إدارة الموظفين", [
       {
         id: "employee_master",
         dimension: "data",
@@ -439,7 +399,7 @@ export const HR_PROCESSES: HrProcess[] = [
     description:
       "تقييم دورة تقييم الأداء وتحديد الاحتياجات التدريبية ومتابعة خطط التطوير.",
     steps: ["تقييم الأداء", "تحديد الاحتياجات التدريبية", "متابعة التطوير"],
-    questions: commonQuestions("appraisal", [
+    questions: commonQuestions("appraisal", "التقييم والتدريب", [
       {
         id: "appraisal_link",
         dimension: "process",
@@ -469,7 +429,7 @@ export const HR_PROCESSES: HrProcess[] = [
       "التسوية النهائية",
       "مكافأة نهاية الخدمة",
     ],
-    questions: commonQuestions("offboarding", [
+    questions: commonQuestions("offboarding", "إنهاء الخدمة", [
       {
         id: "offboarding_checklist",
         dimension: "control",

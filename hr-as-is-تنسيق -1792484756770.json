@@ -1,0 +1,241 @@
+{
+  "meta": {
+    "assessment": "ERPNext As-Is — الموارد البشرية",
+    "moduleId": "hr",
+    "methodology": "Process Maturity (People / Process / Technology / Data / Control)",
+    "exportedAt": "2026-10-20T08:25:56.769Z"
+  },
+  "respondent": {
+    "name": "احمد محمد النجار",
+    "department": "تنسيق ",
+    "role": "hr_specialist",
+    "startedAt": "2026-10-20T07:24:20.785Z",
+    "updatedAt": "2026-10-20T07:24:20.785Z"
+  },
+  "answers": {
+    "recruitment": {
+      "recruitment_tool": "manual",
+      "recruitment_doc": "none",
+      "recruitment_roles": "mostly",
+      "recruitment_data": "trusted",
+      "recruitment_control": "email",
+      "recruitment_cycle": "d2_3",
+      "recruitment_problems": [
+        "duplicate"
+      ],
+      "recruitment_qiwa": "manual"
+    },
+    "contracts": {
+      "contracts_tool": "manual",
+      "contracts_doc": "none",
+      "contracts_roles": "mostly",
+      "contracts_data": "poor",
+      "contracts_control": "audit",
+      "contracts_cycle": "d1",
+      "contracts_problems": [
+        "visibility"
+      ],
+      "contracts_expiry": "excel"
+    },
+    "attendance": {
+      "attendance_tool": "manual",
+      "attendance_doc": "none",
+      "attendance_roles": "mostly",
+      "attendance_data": "good",
+      "attendance_control": "email",
+      "attendance_cycle": "w1",
+      "attendance_problems": [
+        "reporting",
+        "handoff"
+      ],
+      "attendance_source": "excel",
+      "attendance_notes": "الملاحظات والمقترحات لتطوير تنظيم العمل وإدارة شؤون الموظفين\n\nتوجد حاجة إلى تحسين آلية تنظيم المجموعات والحضور والانصراف وترتيب الأسماء، حيث إن تغيّر توزيع الأشخاص باستمرار يؤدي إلى التشتت أثناء التحضير وصعوبة تحديد المجموعة التي يتبع لها كل شخص يوميًا. كما توجد حاجة إلى وضع آلية واضحة لتنظيم الأشخاص الذين لا يزالون تحت التجربة أو لم يتم تصنيفهم رسميًا، من خلال تخصيص قائمة مؤقتة لهم، وتحديد مسؤول عن متابعتهم، وتحديث بياناتهم عند اعتماد توزيعهم النهائي."
+    },
+    "leave": {
+      "leave_tool": "manual",
+      "leave_doc": "none",
+      "leave_roles": "partial",
+      "leave_data": "good",
+      "leave_control": "email",
+      "leave_cycle": "d2_3",
+      "leave_problems": [
+        "none"
+      ],
+      "leave_balance": "ask_hr",
+      "leave_notes": "بيانات ارصدة الاجازات "
+    },
+    "appraisal": {
+      "appraisal_tool": "manual",
+      "appraisal_doc": "none",
+      "appraisal_roles": "mostly",
+      "appraisal_data": "poor",
+      "appraisal_control": "informal",
+      "appraisal_cycle": "unclear",
+      "appraisal_problems": [
+        "none"
+      ],
+      "appraisal_link": "no"
+    },
+    "offboarding": {
+      "offboarding_tool": "manual",
+      "offboarding_doc": "none",
+      "offboarding_roles": "mostly",
+      "offboarding_data": "good",
+      "offboarding_control": "email",
+      "offboarding_cycle": "d2_3",
+      "offboarding_problems": [
+        "none"
+      ],
+      "offboarding_checklist": "paper"
+    }
+  },
+  "result": {
+    "overall": 2.6,
+    "level": 3,
+    "processes": [
+      {
+        "processId": "recruitment",
+        "title": "التوظيف والتعيين",
+        "code": 1,
+        "average": 2.9,
+        "level": 3,
+        "answered": 8,
+        "totalRequired": 8,
+        "complete": true,
+        "byDimension": {
+          "technology": 1,
+          "process": 2.5,
+          "people": 3,
+          "data": 5,
+          "control": 2.5,
+          "problems": 4
+        }
+      },
+      {
+        "processId": "contracts",
+        "title": "إدارة عقود الموظفين",
+        "code": 2,
+        "average": 2.8,
+        "level": 3,
+        "answered": 8,
+        "totalRequired": 8,
+        "complete": true,
+        "byDimension": {
+          "technology": 1,
+          "process": 2.7,
+          "people": 3,
+          "data": 1,
+          "control": 5,
+          "problems": 4
+        }
+      },
+      {
+        "processId": "attendance",
+        "title": "الحضور والانصراف",
+        "code": 3,
+        "average": 2.5,
+        "level": 3,
+        "answered": 8,
+        "totalRequired": 8,
+        "complete": true,
+        "byDimension": {
+          "technology": 1.5,
+          "process": 2,
+          "people": 3,
+          "data": 4,
+          "control": 3,
+          "problems": 3
+        }
+      },
+      {
+        "processId": "leave",
+        "title": "الإجازات والمغادرات",
+        "code": 4,
+        "average": 2.6,
+        "level": 3,
+        "answered": 8,
+        "totalRequired": 8,
+        "complete": true,
+        "byDimension": {
+          "technology": 1,
+          "process": 2.5,
+          "people": 2,
+          "data": 2.5,
+          "control": 3,
+          "problems": 5
+        }
+      },
+      {
+        "processId": "payroll",
+        "title": "مسير الرواتب",
+        "code": 5,
+        "average": 0,
+        "level": 1,
+        "answered": 0,
+        "totalRequired": 8,
+        "complete": false,
+        "byDimension": {}
+      },
+      {
+        "processId": "custody",
+        "title": "إدارة العهد",
+        "code": 6,
+        "average": 0,
+        "level": 1,
+        "answered": 0,
+        "totalRequired": 9,
+        "complete": false,
+        "byDimension": {}
+      },
+      {
+        "processId": "employee_mgmt",
+        "title": "إدارة الموظفين",
+        "code": 8,
+        "average": 0,
+        "level": 1,
+        "answered": 0,
+        "totalRequired": 8,
+        "complete": false,
+        "byDimension": {}
+      },
+      {
+        "processId": "appraisal",
+        "title": "التقييم والتدريب",
+        "code": 9,
+        "average": 1.9,
+        "level": 2,
+        "answered": 8,
+        "totalRequired": 8,
+        "complete": true,
+        "byDimension": {
+          "technology": 1,
+          "process": 1,
+          "people": 3,
+          "data": 1,
+          "control": 2,
+          "problems": 5
+        }
+      },
+      {
+        "processId": "offboarding",
+        "title": "إنهاء الخدمة",
+        "code": 10,
+        "average": 2.9,
+        "level": 3,
+        "answered": 8,
+        "totalRequired": 8,
+        "complete": true,
+        "byDimension": {
+          "technology": 1,
+          "process": 2.5,
+          "people": 3,
+          "data": 4,
+          "control": 2.5,
+          "problems": 5
+        }
+      }
+    ],
+    "completedCount": 6,
+    "totalProcesses": 9
+  }
+}

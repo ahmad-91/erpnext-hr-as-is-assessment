@@ -8,8 +8,12 @@ import {
   WORK_ORDER_PROCESSES,
   WORK_ORDER_ROLES,
 } from "@/data/work-order-processes";
+import {
+  WAREHOUSE_PROCESSES,
+  WAREHOUSE_ROLES,
+} from "@/data/warehouse-processes";
 
-export type ModuleId = "hr" | "procurement" | "work-orders";
+export type ModuleId = "hr" | "procurement" | "work-orders" | "warehouse";
 
 export interface AssessmentModule {
   id: ModuleId;
@@ -55,6 +59,17 @@ export const ASSESSMENT_MODULES: AssessmentModule[] = [
       "دورة أمر العمل للعقد الموحد: UDS، التصاريح، التنفيذ، الإقفال، المستخلص، الفاتورة، التحصيل، العهدة والطوارئ",
     processes: WORK_ORDER_PROCESSES,
     roles: WORK_ORDER_ROLES,
+  },
+  {
+    id: "warehouse",
+    title: "المستودعات",
+    titleEn: "Warehouses",
+    active: true,
+    path: "/warehouse",
+    description:
+      "مخازن الشركة ومخازن أمانات الكهرباء: الاستلام، الفصل، الصرف على أمر العمل، الإرجاع، والجرد",
+    processes: WAREHOUSE_PROCESSES,
+    roles: WAREHOUSE_ROLES,
   },
 ];
 
